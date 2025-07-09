@@ -1,7 +1,7 @@
-using LaPelicula.UI.Components;
+using LaPelicula.UI.Server.Components;
 using CSnakes.Runtime;
 using CSnakes.Runtime.Locators;
-using LaPelicula.UI.Services;
+using LaPelicula.UI.Server.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

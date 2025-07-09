@@ -1,4 +1,4 @@
-namespace LaPelicula.UI.Models;
+namespace LaPelicula.UI.Server.Models;
 
 public enum TensorFlowModelStatus
 {

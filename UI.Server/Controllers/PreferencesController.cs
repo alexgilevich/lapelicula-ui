@@ -1,8 +1,8 @@
-using LaPelicula.UI.Models;
-using LaPelicula.UI.Services;
+using LaPelicula.UI.Server.Models;
+using LaPelicula.UI.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LaPelicula.UI.Controllers;
+namespace LaPelicula.UI.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

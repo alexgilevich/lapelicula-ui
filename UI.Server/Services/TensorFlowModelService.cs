@@ -1,8 +1,8 @@
 using CSnakes.Runtime;
 using CSnakes.Runtime.Python;
-using LaPelicula.UI.Models;
+using LaPelicula.UI.Server.Models;
 
-namespace LaPelicula.UI.Services;
+namespace LaPelicula.UI.Server.Services;
 
 public interface ITensorFlowModelService
 {

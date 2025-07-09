@@ -1,4 +1,4 @@
-namespace LaPelicula.UI.Services;
+namespace LaPelicula.UI.Server.Services;
 
 public class ModelTrainingHostedService(ITensorFlowModelService tensorFlowModelService) : BackgroundService
 {

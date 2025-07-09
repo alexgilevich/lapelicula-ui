@@ -5,7 +5,8 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <RootNamespace>LaPelicula.UI</RootNamespace>
+        <RootNamespace>LaPelicula.UI.Server</RootNamespace>
+        <AssemblyName>LaPelicula.UI.Server</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
