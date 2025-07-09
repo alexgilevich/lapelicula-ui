@@ -1,4 +1,4 @@
-namespace CSnakesTestWebApp.Models;
+namespace LaPelicula.UI.Models;
 
 public enum TensorFlowModelStatus
 {

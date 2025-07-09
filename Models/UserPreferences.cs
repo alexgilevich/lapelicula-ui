@@ -1,4 +1,5 @@
-namespace CSnakesTestWebApp.Models;
+namespace LaPelicula.UI.Models;
+
 
 public class UserPreferences
 {
@@ -46,4 +47,27 @@ public class UserPreferences
             { nameof(Thriller), Thriller }
         };
     }
+    
+    public static UserPreferences FromDictionary(Dictionary<string, double> dictionary)
+    {
+        return new UserPreferences
+        {
+            Action = dictionary[nameof(Action)],
+            Adventure = dictionary[nameof(Adventure)],
+            Animation = dictionary[nameof(Animation)],
+            Kids = dictionary[nameof(Kids)],
+            Comedy = dictionary[nameof(Comedy)],
+            Crime = dictionary[nameof(Crime)],
+            Documentary = dictionary[nameof(Documentary)],
+            Drama = dictionary[nameof(Drama)],
+            Fantasy = dictionary[nameof(Fantasy)],
+            Horror = dictionary[nameof(Horror)],
+            Mystery = dictionary[nameof(Mystery)],
+            Romance = dictionary[nameof(Romance)],
+            Scifi = dictionary[nameof(Scifi)],
+            Thriller = dictionary[nameof(Thriller)],
+        };
+    }
+    
+    
 }

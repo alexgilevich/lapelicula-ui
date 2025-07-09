@@ -1,9 +1,8 @@
-using CSnakesTestWebApp.Components;
+using LaPelicula.UI.Components;
 using CSnakes.Runtime;
 using CSnakes.Runtime.Locators;
-using CSnakesTestWebApp.Services;
+using LaPelicula.UI.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,21 +11,22 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var home = Path.Join(Environment.CurrentDirectory, "ml");
-builder.Services.WithPython()
+builder.Services
+    .WithPython()
     .WithHome(home)
-    .WithVirtualEnvironment(Path.Join(home, ".venv"))
     .FromRedistributable(RedistributablePythonVersion.Python3_11)
+    .WithVirtualEnvironment(Path.Join(home, ".venv"))
+    .WithPipInstaller(Path.Join(home, "requirements.txt"))
     ;
 
 builder.Services
     .AddLogging()
     .AddScoped<IUserPreferencesService, UserPreferencesService>()
     .AddSingleton<ITensorFlowModelService, TensorFlowModelService>()
-    .AddMudServices()
     .AddHttpContextAccessor();
 
 // Model training hosted service – immediately starts training when the application starts
-builder.Services.AddHostedService<ModelTrainingHostedService>();
+//builder.Services.AddHostedService<ModelTrainingHostedService>();
 builder.Services.Configure<HostOptions>(options =>
 {
     //Service Behavior in case of exceptions - defaults to StopHost
@@ -48,5 +48,4 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
 app.Run();

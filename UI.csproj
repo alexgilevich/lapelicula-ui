@@ -5,12 +5,11 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <RootNamespace>LaPelicula</RootNamespace>
+        <RootNamespace>LaPelicula.UI</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CSnakes.Runtime" Version="1.0.35" />
-      <PackageReference Include="MudBlazor" Version="8.7.0" />
+      <PackageReference Include="CSnakes.Runtime" Version="1.1.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -40,6 +39,31 @@
       <None Update="ml\data\content_y_train.csv">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="ml\recommendation_system.py">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </AdditionalFiles>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="ml\data_pipeline.py" />
+      <Content Include="ml\data_pipeline.py">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="ml\features.py" />
+      <Content Include="ml\features.py">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="ml\model.py" />
+      <Content Include="ml\model.py">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\lib\user-preferences\dist\" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-namespace CSnakesTestWebApp.Services;
+namespace LaPelicula.UI.Services;
 
 public class ModelTrainingHostedService(ITensorFlowModelService tensorFlowModelService) : BackgroundService
 {

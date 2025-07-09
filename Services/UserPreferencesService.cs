@@ -1,8 +1,8 @@
 using System.Buffers.Text;
 using System.Text;
-using CSnakesTestWebApp.Models;
+using LaPelicula.UI.Models;
 
-namespace CSnakesTestWebApp.Services;
+namespace LaPelicula.UI.Services;
 
 public interface IUserPreferencesService
 {

@@ -1,11 +1,60 @@
 ﻿@page "/"
+@using LaPelicula.UI.Models
+@using LaPelicula.UI.Services
+@inject IJSRuntime JSRuntime
+@inject IUserPreferencesService UserPreferencesService
+@rendermode InteractiveServer
 
-<PageTitle>.NET ❤️ Python – TensorFlow-based Movie Recommender</PageTitle>
+
+<PageTitle>La Pelicula – Pick a movie to watch</PageTitle>
 
 <h1>We think you are going to like:</h1>
 
-<ul>
-    
-</ul>
 
-Set up your preferences in <a href="/settings">Settings</a>
+<a href="/settings">Adjust your preferences</a>
+<div id="react-container" style="line-height: unset;"></div>
+
+<button @onclick="SayHello">Pff</button>
+
+@code {
+
+    record RatingByGenre(string Name, double Rating);
+
+    private void SayHello()
+    {
+        Console.WriteLine("Hello");
+    }
+    
+    [JSInvokable]
+    public void OnGenreRatingChanged(string genreName, double rating)
+    {
+        var userPreferences = UserPreferencesService.Get();
+        var genreToRating = userPreferences.ToDictionary();
+        genreToRating[genreName] = rating;
+        userPreferences = UserPreferences.FromDictionary(genreToRating);
+        UserPreferencesService.Apply(userPreferences);
+    }
+    
+    private DotNetObjectReference<Home>? _objectReference;
+
+    protected override async Task OnInitializedAsync() => 
+        _objectReference = DotNetObjectReference.Create(this);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeAsync<string>("ReactUserPreferences.persistBlazorObject", _objectReference);
+            var userPreferences = UserPreferencesService.Get();
+            await JSRuntime.InvokeVoidAsync(
+                "ReactUserPreferences.renderComponent", 
+                "react-container", 
+                new
+                {
+                    by_genre =  userPreferences.ToDictionary().Select(kvp => new RatingByGenre(kvp.Key, kvp.Value)).ToArray()
+                }
+            );
+        }
+    }
+    
+}

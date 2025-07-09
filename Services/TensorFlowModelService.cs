@@ -1,7 +1,8 @@
 using CSnakes.Runtime;
-using CSnakesTestWebApp.Models;
+using CSnakes.Runtime.Python;
+using LaPelicula.UI.Models;
 
-namespace CSnakesTestWebApp.Services;
+namespace LaPelicula.UI.Services;
 
 public interface ITensorFlowModelService
 {
@@ -28,7 +29,8 @@ public class TensorFlowModelService : ITensorFlowModelService
         {
             // keep local state to avoid python GIL lock
             _status = TensorFlowModelStatus.InProgress;
-            _pythonEnvironment.RecommendationSystem().Train();
+            _pythonEnvironment.RecommendationSystem().Preprocess("./ml/data");
+            _pythonEnvironment.RecommendationSystem().Train("./ml/artifacts/model.keras");
         }
         catch (Exception ex)
         {
@@ -43,7 +45,7 @@ public class TensorFlowModelService : ITensorFlowModelService
         try
         {
             return _pythonEnvironment.RecommendationSystem()
-                .Recommend(userPreferences.ToDictionary())
+                .Recommend([], userPreferences.ToDictionary())
                 .Select(
                     ((string movieName, double rating) x) => new Recommendation(x.movieName, x.rating))
                 .ToArray();

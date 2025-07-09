@@ -1,8 +1,8 @@
 ﻿@page "/settings"
 @using CSnakes.Runtime
-@using CSnakesTestWebApp.Models
-@using CSnakesTestWebApp.Services
-@using MudBlazor
+@using LaPelicula.UI.Models
+@using LaPelicula.UI.Services
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 <PageTitle>.NET ❤️ Python – TensorFlow-based Movie Recommender – Settings</PageTitle>
@@ -11,8 +11,8 @@
     <h1>User Preferences</h1>
     <p>Rate your preferences:</p>
     
-    <p>Animation: <MudRating MaxValue="10"></MudRating></p>
-    <p>Fantasy: <MudRating MaxValue="10"></MudRating></p>
+    <p>Animation: </p>
+    <p>Fantasy: </p>
     
     <button class="btn btn-primary" @onclick="ApplyPreferences">Apply</button>
 </section>
