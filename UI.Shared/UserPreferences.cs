@@ -48,7 +48,7 @@ public class UserPreferences
         };
     }
     
-    public static UserPreferences FromDictionary(Dictionary<string, double> dictionary)
+    public static UserPreferences FromDictionary(IDictionary<string, double> dictionary)
     {
         return new UserPreferences
         {

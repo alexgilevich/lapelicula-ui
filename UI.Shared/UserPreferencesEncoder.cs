@@ -49,6 +49,8 @@ public class UserPreferencesEncoder(ILogger<UserPreferencesEncoder> logger) : IU
     public UserPreferences Decode(string preferencesEncodedStr)
     {
         UserPreferences preferences = new();
+        if (string.IsNullOrEmpty(preferencesEncodedStr)) 
+            return preferences;
         try
         {
             byte[] base64Bytes = Convert.FromBase64String(preferencesEncodedStr);

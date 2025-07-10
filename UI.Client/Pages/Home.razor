@@ -2,7 +2,7 @@
 @using LaPelicula.UI.Shared
 @inject IJSRuntime JSRuntime
 @inject IUserPreferencesEncoder UserPreferencesEncoder
-@rendermode InteractiveServer
+@rendermode InteractiveWebAssembly
 
 
 <PageTitle>La Pelicula – Pick a movie to watch</PageTitle>
@@ -24,11 +24,21 @@
     }
     
     [JSInvokable]
-    public string Encode(List<RatingByGenre> ratingsByGenre)
+    public string Encode(IDictionary<string, double> preferencesDict)
     {
-        var genreToRating = ratingsByGenre.ToDictionary(genreRating => genreRating.Name, genreRating => genreRating.Rating)
-        var userPreferences = UserPreferences.FromDictionary(genreToRating);
+        if (preferencesDict is null)
+        {
+            return String.Empty;
+        }
+        var userPreferences = UserPreferences.FromDictionary(preferencesDict);
         return UserPreferencesEncoder.Encode(userPreferences);
+    }
+    
+    [JSInvokable]
+    public IDictionary<string, double> Decode(string encodedGenrePreferences)
+    {
+        return UserPreferencesEncoder.Decode(encodedGenrePreferences)
+            .ToDictionary();
     }
     
     private DotNetObjectReference<Home>? _objectReference;
@@ -41,14 +51,10 @@
         if (firstRender)
         {
             await JSRuntime.InvokeAsync<string>("ReactUserPreferences.persistBlazorObject", _objectReference);
-            var userPreferences = UserPreferencesEncoder.Decode();
+            
             await JSRuntime.InvokeVoidAsync(
                 "ReactUserPreferences.renderComponent", 
-                "react-container", 
-                new
-                {
-                    by_genre =  userPreferences.ToDictionary().Select(kvp => new RatingByGenre(kvp.Key, kvp.Value)).ToArray()
-                }
+                "react-container"
             );
         }
     }

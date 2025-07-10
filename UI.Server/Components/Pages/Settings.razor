@@ -27,11 +27,6 @@
 @inject IUserPreferencesEncoder UserPreferencesEncoder
 
 @code {
-
-    private ViewModel GetPreferences()
-    {
-        return ViewModel.From(UserPreferencesEncoder.Get());
-    }
     
     private void ApplyPreferences()
     {

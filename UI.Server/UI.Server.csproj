@@ -11,6 +11,7 @@
 
     <ItemGroup>
       <PackageReference Include="CSnakes.Runtime" Version="1.1.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.7" />
     </ItemGroup>
 
     <ItemGroup>
@@ -68,6 +69,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\UI.Client\UI.Client.csproj" />
       <ProjectReference Include="..\UI.Shared\UI.Shared.csproj" />
     </ItemGroup>
 

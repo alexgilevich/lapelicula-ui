@@ -3,14 +3,13 @@ using CSnakes.Runtime;
 using CSnakes.Runtime.Locators;
 using LaPelicula.UI.Server.Services;
 using LaPelicula.UI.Shared;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
 
 var home = Path.Join(Environment.CurrentDirectory, "ml");
 builder.Services
@@ -18,8 +17,7 @@ builder.Services
     .WithHome(home)
     .FromRedistributable(RedistributablePythonVersion.Python3_11)
     .WithVirtualEnvironment(Path.Join(home, ".venv"))
-    .WithPipInstaller(Path.Join(home, "requirements.txt"))
-    ;
+    .WithPipInstaller(Path.Join(home, "requirements.txt"));
 
 builder.Services
     .AddLogging()
@@ -38,7 +36,11 @@ builder.Services.Configure<HostOptions>(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+}
+else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -49,5 +51,7 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(LaPelicula.UI.Client._Imports).Assembly);
 app.Run();
