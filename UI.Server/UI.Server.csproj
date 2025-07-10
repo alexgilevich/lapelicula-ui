@@ -67,4 +67,8 @@
       <Folder Include="wwwroot\lib\user-preferences\dist\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\UI.Shared\UI.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

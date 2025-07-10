@@ -2,6 +2,7 @@ using LaPelicula.UI.Server.Components;
 using CSnakes.Runtime;
 using CSnakes.Runtime.Locators;
 using LaPelicula.UI.Server.Services;
+using LaPelicula.UI.Shared;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +23,7 @@ builder.Services
 
 builder.Services
     .AddLogging()
-    .AddScoped<IUserPreferencesService, UserPreferencesService>()
+    .AddScoped<IUserPreferencesEncoder, UserPreferencesEncoder>()
     .AddSingleton<ITensorFlowModelService, TensorFlowModelService>()
     .AddHttpContextAccessor();
 

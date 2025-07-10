@@ -1,4 +1,4 @@
-namespace LaPelicula.UI.Server.Models;
+namespace LaPelicula.UI.Shared;
 
 
 public class UserPreferences

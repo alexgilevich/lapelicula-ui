@@ -2,6 +2,7 @@
 @using CSnakes.Runtime
 @using LaPelicula.UI.Server.Models
 @using LaPelicula.UI.Server.Services
+@using LaPelicula.UI.Shared
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
@@ -23,13 +24,13 @@
 </section>
 
 @inject ITensorFlowModelService TensorFlowModelService
-@inject IUserPreferencesService UserPreferencesService
+@inject IUserPreferencesEncoder UserPreferencesEncoder
 
 @code {
 
     private ViewModel GetPreferences()
     {
-        return ViewModel.From(UserPreferencesService.Get());
+        return ViewModel.From(UserPreferencesEncoder.Get());
     }
     
     private void ApplyPreferences()

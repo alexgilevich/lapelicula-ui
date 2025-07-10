@@ -1,27 +1,20 @@
 using System.Buffers.Text;
 using System.Text;
-using LaPelicula.UI.Server.Models;
+using Microsoft.Extensions.Logging;
 
-namespace LaPelicula.UI.Server.Services;
+namespace LaPelicula.UI.Shared;
 
-public interface IUserPreferencesService
+public interface IUserPreferencesEncoder
 {
-    void Apply(UserPreferences preferences);
-    UserPreferences Get();
+    UserPreferences Decode(string preferencesEncodedStr);
+    string Encode(UserPreferences preferences);
 }
 
-public class UserPreferencesService : IUserPreferencesService
+public class UserPreferencesEncoder(ILogger<UserPreferencesEncoder> logger) : IUserPreferencesEncoder
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<UserPreferencesService> _logger;
+    private readonly ILogger<UserPreferencesEncoder> _logger = logger;
 
-    public UserPreferencesService(IHttpContextAccessor httpContextAccessor, ILogger<UserPreferencesService> logger)
-    {
-        _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
-    }
-
-    public void Apply(UserPreferences preferences)
+    public string Encode(UserPreferences preferences)
     {
         // Create an array with the genre values in the same order as decoding expects
         double[] preferencesArr = new double[]
@@ -50,19 +43,12 @@ public class UserPreferencesService : IUserPreferencesService
 
         // Convert to Base64 string
         string base64Encoded = Convert.ToBase64String(utf8Bytes);
-
-        var cookieOptions = new CookieOptions();
-        cookieOptions.Expires = DateTimeOffset.Now.AddDays(183);
-        
-        _httpContextAccessor.HttpContext.Response.Cookies.Append("my_prefs", base64Encoded, cookieOptions);
+        return base64Encoded;
     }
     
-    public UserPreferences Get()
+    public UserPreferences Decode(string preferencesEncodedStr)
     {
-        UserPreferences preferences = new UserPreferences();
-        if (!_httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("my_prefs", out string preferencesEncodedStr))
-            return preferences;
-        
+        UserPreferences preferences = new();
         try
         {
             byte[] base64Bytes = Convert.FromBase64String(preferencesEncodedStr);
@@ -94,5 +80,4 @@ public class UserPreferencesService : IUserPreferencesService
 
         return preferences;
     }
-
 }

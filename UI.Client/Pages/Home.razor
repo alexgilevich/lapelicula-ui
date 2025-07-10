@@ -1,8 +1,7 @@
 ﻿@page "/"
-@using LaPelicula.UI.Server.Models
-@using LaPelicula.UI.Server.Services
+@using LaPelicula.UI.Shared
 @inject IJSRuntime JSRuntime
-@inject IUserPreferencesService UserPreferencesService
+@inject IUserPreferencesEncoder UserPreferencesEncoder
 @rendermode InteractiveServer
 
 
@@ -14,11 +13,10 @@
 <a href="/settings">Adjust your preferences</a>
 <div id="react-container" style="line-height: unset;"></div>
 
-<button @onclick="SayHello">Pff</button>
+<button onclick="@SayHello">Say Hello</button>
 
 @code {
-
-    record RatingByGenre(string Name, double Rating);
+    public record RatingByGenre(string Name, double Rating);
 
     private void SayHello()
     {
@@ -26,13 +24,11 @@
     }
     
     [JSInvokable]
-    public void OnGenreRatingChanged(string genreName, double rating)
+    public string Encode(List<RatingByGenre> ratingsByGenre)
     {
-        var userPreferences = UserPreferencesService.Get();
-        var genreToRating = userPreferences.ToDictionary();
-        genreToRating[genreName] = rating;
-        userPreferences = UserPreferences.FromDictionary(genreToRating);
-        UserPreferencesService.Apply(userPreferences);
+        var genreToRating = ratingsByGenre.ToDictionary(genreRating => genreRating.Name, genreRating => genreRating.Rating)
+        var userPreferences = UserPreferences.FromDictionary(genreToRating);
+        return UserPreferencesEncoder.Encode(userPreferences);
     }
     
     private DotNetObjectReference<Home>? _objectReference;
@@ -45,7 +41,7 @@
         if (firstRender)
         {
             await JSRuntime.InvokeAsync<string>("ReactUserPreferences.persistBlazorObject", _objectReference);
-            var userPreferences = UserPreferencesService.Get();
+            var userPreferences = UserPreferencesEncoder.Decode();
             await JSRuntime.InvokeVoidAsync(
                 "ReactUserPreferences.renderComponent", 
                 "react-container", 

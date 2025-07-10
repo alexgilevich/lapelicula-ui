@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.Server", "UI.Server\UI.Server.csproj", "{E7691F95-8FBB-4A8B-8B32-18A3C08DF8A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.Client", "UI.Client\UI.Client.csproj", "{8CB69E7B-8BCC-4227-BBBD-854D0764B061}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.Shared", "UI.Shared\UI.Shared.csproj", "{3D78DB02-0472-4A97-BA7C-DBA6ABB4AA89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{E7691F95-8FBB-4A8B-8B32-18A3C08DF8A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7691F95-8FBB-4A8B-8B32-18A3C08DF8A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7691F95-8FBB-4A8B-8B32-18A3C08DF8A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CB69E7B-8BCC-4227-BBBD-854D0764B061}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CB69E7B-8BCC-4227-BBBD-854D0764B061}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CB69E7B-8BCC-4227-BBBD-854D0764B061}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CB69E7B-8BCC-4227-BBBD-854D0764B061}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D78DB02-0472-4A97-BA7C-DBA6ABB4AA89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D78DB02-0472-4A97-BA7C-DBA6ABB4AA89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D78DB02-0472-4A97-BA7C-DBA6ABB4AA89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D78DB02-0472-4A97-BA7C-DBA6ABB4AA89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

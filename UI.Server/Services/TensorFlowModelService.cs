@@ -1,6 +1,7 @@
 using CSnakes.Runtime;
 using CSnakes.Runtime.Python;
 using LaPelicula.UI.Server.Models;
+using LaPelicula.UI.Shared;
 
 namespace LaPelicula.UI.Server.Services;
 
