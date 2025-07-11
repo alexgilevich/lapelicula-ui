@@ -4,23 +4,91 @@
 @inject IUserPreferencesEncoder UserPreferencesEncoder
 @rendermode InteractiveWebAssembly
 
+<HeadContent>
+    <script src="_content/Blazorise.Animate/blazorise.animate.js?v=1.8.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@glidejs/glide@3.6.0/dist/glide.min.js"></script>
+</HeadContent>
 
 <PageTitle>La Pelicula – Pick a movie to watch</PageTitle>
 
-<h1>We think you are going to like:</h1>
+
+<main>
+    <div class="recommendations-slideshow @(showPreferences ? "hidden" : "")">
+        <section class="hero">
+            <h1>You might like <span class="highlight">these movies</span></h1>
+            <p>A carefully curated collection of movies selected just for you.</p>
+        </section>
+
+        <div class="glide">
+            <div class="gradient-overlay overlay-left"></div>
+            <div class="gradient-overlay overlay-right"></div>
+
+            <div class="glide__track" data-glide-el="track">
+                <ul class="glide__slides">
+                    <li class="glide__slide"><img src="https://image.tmdb.org/t/p/w1280/mKp4euM5Cv3m2U1Vmby3OGwcD5y.jpg" alt="Slide"></li>
+                    <li class="glide__slide"><img src="https://image.tmdb.org/t/p/w1280/mKp4euM5Cv3m2U1Vmby3OGwcD5y.jpg" alt="Slide"></li>
+                    <li class="glide__slide"><img src="https://image.tmdb.org/t/p/w1280/mKp4euM5Cv3m2U1Vmby3OGwcD5y.jpg" alt="Slide"></li>
+                    <li class="glide__slide"><img src="https://image.tmdb.org/t/p/w1280/mKp4euM5Cv3m2U1Vmby3OGwcD5y.jpg" alt="Slide"></li>
+                    <li class="glide__slide"><img src="https://image.tmdb.org/t/p/w1280/mKp4euM5Cv3m2U1Vmby3OGwcD5y.jpg" alt="Slide"></li>
+                </ul>
+            </div>
+
+            <div class="glide__arrows" data-glide-el="controls">
+                <button class="glide__arrow glide__arrow--left" data-glide-dir="<">❮</button>
+                <button class="glide__arrow glide__arrow--right" data-glide-dir=">">❯</button>
+            </div>
+        </div>
 
 
-<a href="/settings">Adjust your preferences</a>
-<div id="react-container" style="line-height: unset;"></div>
+        <button class="configure-button" @onclick="TriggerPreferences">Adjust your preferences</button>
 
-<button onclick="@SayHello">Say Hello</button>
+    
+    </div>
+    
+    <div class="preferences-overlay @(!showPreferences ? "hidden" : "")">
+        <div class="preferences-overlay__container">
+            <h1 class="preferences-overlay__title">How would you rate these movie genres?</h1>
+            <div class="preferences-overlay__body" id="react-container"></div>
+            <div class="preferences-overlay__actions">
+                <button class="continue-button" @onclick="TriggerPreferences">Save & continue</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    new Glide('.glide', {
+      type: 'carousel',
+      perView: 6,
+      focusAt: 'center',
+      gap: 24,
+      autoplay: 5000,
+      breakpoints: {
+        1600: {
+          perView: 5
+        },
+        1024: {
+          perView: 3
+        },
+        800: {
+          perView: 2
+        },
+        500: {
+          perView: 1
+        }
+      }
+    }).mount();
+</script>
+
 
 @code {
-    public record RatingByGenre(string Name, double Rating);
-
-    private void SayHello()
+    private bool showPreferences = false;
+    private DotNetObjectReference<Home>? _objectReference;
+    
+    private async Task TriggerPreferences()
     {
-        Console.WriteLine("Hello");
+        showPreferences = !showPreferences;
+        await JSRuntime.InvokeAsync<string>("ReactUserPreferences.triggerPreferences");
     }
     
     [JSInvokable]
@@ -40,8 +108,6 @@
         return UserPreferencesEncoder.Decode(encodedGenrePreferences)
             .ToDictionary();
     }
-    
-    private DotNetObjectReference<Home>? _objectReference;
 
     protected override async Task OnInitializedAsync() => 
         _objectReference = DotNetObjectReference.Create(this);

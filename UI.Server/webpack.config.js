@@ -30,5 +30,6 @@ module.exports = {
     resolve: {
         extensions: ['.js', '.jsx'], // Resolve these extensions
     },
+    devtool: 'source-map',
     mode: 'development', // Set mode to 'development' or 'production'
 };
