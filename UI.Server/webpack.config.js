@@ -1,12 +1,15 @@
 const path = require('path');
 
 module.exports = {
-    entry: './wwwroot/lib/user-preferences/component.js', // Source directory and entry file
+    entry: {
+        'ReactUserPreferences': './wwwroot/lib/ReactUserPreferences/component.js',
+        'MoviesSlideshow': './wwwroot/lib/MoviesSlideshow/component.js',
+    }, // Source directory and entry file
     output: {
-        path: path.resolve(__dirname, 'wwwroot/lib/user-preferences/dist'), // Output directory
-        filename: 'react-user-preferences.component.js', // Output file name
+        path: path.resolve(__dirname, 'wwwroot/lib/'), // Output directory
+        filename: '[name]/dist/component.bundle.js', // Output file name
         libraryTarget: 'umd',
-        library: 'ReactUserPreferences',
+        library: '[name]',
         globalObject: 'this'
     },
     module: {

@@ -65,12 +65,19 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\lib\user-preferences\dist\" />
+      <Folder Include="wwwroot\lib\ReactUserPreferences\dist\" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\UI.Client\UI.Client.csproj" />
       <ProjectReference Include="..\UI.Shared\UI.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\lib\[name]\dist\MoviesSlideshow.component.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\lib\[name]\dist\MoviesSlideshow.component.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\lib\[name]\dist\ReactUserPreferences.component.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\lib\[name]\dist\ReactUserPreferences.component.js.map" />
     </ItemGroup>
 
 </Project>

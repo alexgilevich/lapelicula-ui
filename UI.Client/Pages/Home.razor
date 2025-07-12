@@ -1,16 +1,18 @@
 ﻿@page "/"
+@using LaPelicula.UI.Client.Services
 @using LaPelicula.UI.Shared
 @inject IJSRuntime JSRuntime
 @inject IUserPreferencesEncoder UserPreferencesEncoder
-@rendermode InteractiveWebAssembly
+@inject IRecommendationsHttpService RecommendationsHttpService
+@inject ILogger<Home> Logger
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
-<HeadContent>
-    <script src="_content/Blazorise.Animate/blazorise.animate.js?v=1.8.0.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@@glidejs/glide@3.6.0/dist/glide.min.js"></script>
-</HeadContent>
 
 <PageTitle>La Pelicula – Pick a movie to watch</PageTitle>
 
+<HeadContent>
+    <script src="https://cdn.jsdelivr.net/npm/@@glidejs/glide@3.6.0/dist/glide.min.js"></script>
+</HeadContent>
 
 <main>
     <div class="recommendations-slideshow @(showPreferences ? "hidden" : "")">
@@ -18,7 +20,12 @@
             <h1>You might like <span class="highlight">these movies</span></h1>
             <p>A carefully curated collection of movies selected just for you.</p>
         </section>
-
+        <div>
+            @foreach (var recommendation in _recommendations)
+            {
+                <p>@recommendation</p>
+            }
+        </div>
         <div class="glide">
             <div class="gradient-overlay overlay-left"></div>
             <div class="gradient-overlay overlay-right"></div>
@@ -56,35 +63,17 @@
     </div>
 </main>
 
+
+
 <script>
-    new Glide('.glide', {
-      type: 'carousel',
-      perView: 6,
-      focusAt: 'center',
-      gap: 24,
-      autoplay: 5000,
-      breakpoints: {
-        1600: {
-          perView: 5
-        },
-        1024: {
-          perView: 3
-        },
-        800: {
-          perView: 2
-        },
-        500: {
-          perView: 1
-        }
-      }
-    }).mount();
+    
 </script>
 
 
 @code {
     private bool showPreferences = false;
     private DotNetObjectReference<Home>? _objectReference;
-    
+    private List<String> _recommendations = new ();
     private async Task TriggerPreferences()
     {
         showPreferences = !showPreferences;
@@ -109,8 +98,18 @@
             .ToDictionary();
     }
 
-    protected override async Task OnInitializedAsync() => 
+    protected override async Task OnInitializedAsync()
+    {
         _objectReference = DotNetObjectReference.Create(this);
+        try
+        {
+            _recommendations = await RecommendationsHttpService.GetRecommendations();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to get recommendations");
+        }        
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -121,6 +120,10 @@
             await JSRuntime.InvokeVoidAsync(
                 "ReactUserPreferences.renderComponent", 
                 "react-container"
+            );
+            await JSRuntime.InvokeVoidAsync(
+                "MoviesSlideshow.renderComponent", 
+                ".glide"
             );
         }
     }
