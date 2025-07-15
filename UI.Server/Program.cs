@@ -3,6 +3,7 @@ using CSnakes.Runtime;
 using CSnakes.Runtime.Locators;
 using LaPelicula.UI.Server.Services;
 using LaPelicula.UI.Shared;
+using Microsoft.Extensions.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,13 +22,16 @@ builder.Services
 
 builder.Services
     .AddLogging()
-    .AddScoped<IUserPreferencesEncoder, UserPreferencesEncoder>()
+    .AddMemoryCache()
+    .AddSingleton<IUserPreferencesEncoder, UserPreferencesEncoder>()
     .AddSingleton<ITensorFlowModelService, TensorFlowModelService>()
+    .AddSingleton<IMovieRepository, InMemoryMovieRepository>()
+    .AddSingleton<IRecommendationService, RecommendationService>()
     .AddHttpContextAccessor()
     .AddControllers();
 
 // Model training hosted service – immediately starts training when the application starts
-//builder.Services.AddHostedService<ModelTrainingHostedService>();
+builder.Services.AddHostedService<ModelTrainingHostedService>();
 builder.Services.Configure<HostOptions>(options =>
 {
     //Service Behavior in case of exceptions - defaults to StopHost

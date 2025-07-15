@@ -8,8 +8,9 @@ namespace LaPelicula.UI.Server.Services;
 public interface ITensorFlowModelService
 {
     void Train();
-    IReadOnlyList<Recommendation> Recommend(UserPreferences userPreferences);
+    ValueTask<IReadOnlyList<(long, double)>> RecommendAsync(UserPreferences userPreferences);
     TensorFlowModelStatus GetStatus();
+    IReadOnlyDictionary<long, IReadOnlyDictionary<string, PyObject>> Preprocess();
 }
 
 public class TensorFlowModelService : ITensorFlowModelService
@@ -24,37 +25,55 @@ public class TensorFlowModelService : ITensorFlowModelService
         _logger = logger;
     }
 
+    public IReadOnlyDictionary<long, IReadOnlyDictionary<string, PyObject>> Preprocess()
+    {
+        try
+        {
+            // keep local state to avoid python GIL lock
+            _status = TensorFlowModelStatus.InProgress;
+            return _pythonEnvironment.RecommendationSystem().Preprocess("./ml/data");
+            
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while preprocessing data");
+            _status = TensorFlowModelStatus.Error;
+            throw;
+        }
+    }
+    
     public void Train()
     {
         try
         {
             // keep local state to avoid python GIL lock
             _status = TensorFlowModelStatus.InProgress;
-            _pythonEnvironment.RecommendationSystem().Preprocess("./ml/data");
             _pythonEnvironment.RecommendationSystem().Train("./ml/artifacts/model.keras");
+            _status = TensorFlowModelStatus.Trained;
         }
-        catch (Exception ex)
+        catch (PythonInvocationException exc)
         {
+            _logger.LogError(exc, "Error occurred while training TensorFlow model");
             _status = TensorFlowModelStatus.Error;
             throw;
         }
-        
+
     }
-    
-    public IReadOnlyList<Recommendation> Recommend(UserPreferences userPreferences)
+
+    public async ValueTask<IReadOnlyList<(long, double)>> RecommendAsync(UserPreferences userPreferences)
     {
         try
         {
-            return _pythonEnvironment.RecommendationSystem()
-                .Recommend([], userPreferences.ToDictionary())
-                .Select(
-                    ((string movieName, double rating) x) => new Recommendation(x.movieName, x.rating))
-                .ToArray();
+            return await Task.Run(() =>
+            {
+                return _pythonEnvironment.RecommendationSystem()
+                    .Recommend([], userPreferences.ToDictionary());
+            });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while predicting recommendations");
-            return [];
+            throw;
         }
     }
     
@@ -76,4 +95,10 @@ public class TensorFlowModelService : ITensorFlowModelService
             return TensorFlowModelStatus.Error;
         }
     }
+}
+
+internal static class PyObjectExtensions
+{
+    public static T SafeAs<T>(this PyObject obj, T defaultValue = default(T)) =>
+        obj.IsNone() ? defaultValue : obj.As<T>();
 }

@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using global::UI.Shared
 @using LaPelicula.UI.Client.Services
 @using LaPelicula.UI.Shared
 @inject IJSRuntime JSRuntime
@@ -20,36 +21,34 @@
             <h1>You might like <span class="highlight">these movies</span></h1>
             <p>A carefully curated collection of movies selected just for you.</p>
         </section>
-        <div>
-            @foreach (var recommendation in _recommendations)
-            {
-                <p>@recommendation</p>
-            }
-        </div>
-        <div class="glide">
-            <div class="gradient-overlay overlay-left"></div>
-            <div class="gradient-overlay overlay-right"></div>
+        @if (modelTrained)
+        {
+            <div class="glide">
+                <div class="gradient-overlay overlay-left"></div>
+                <div class="gradient-overlay overlay-right"></div>
 
-            <div class="glide__track" data-glide-el="track">
-                <ul class="glide__slides">
-                    <li class="glide__slide"><img src="https://image.tmdb.org/t/p/w1280/mKp4euM5Cv3m2U1Vmby3OGwcD5y.jpg" alt="Slide"></li>
-                    <li class="glide__slide"><img src="https://image.tmdb.org/t/p/w1280/mKp4euM5Cv3m2U1Vmby3OGwcD5y.jpg" alt="Slide"></li>
-                    <li class="glide__slide"><img src="https://image.tmdb.org/t/p/w1280/mKp4euM5Cv3m2U1Vmby3OGwcD5y.jpg" alt="Slide"></li>
-                    <li class="glide__slide"><img src="https://image.tmdb.org/t/p/w1280/mKp4euM5Cv3m2U1Vmby3OGwcD5y.jpg" alt="Slide"></li>
-                    <li class="glide__slide"><img src="https://image.tmdb.org/t/p/w1280/mKp4euM5Cv3m2U1Vmby3OGwcD5y.jpg" alt="Slide"></li>
-                </ul>
+                <div class="glide__track" data-glide-el="track">
+                    
+                    <ul class="glide__slides">
+                        @foreach (var recommendation in _recommendations)
+                        {
+                            <li class="glide__slide"><img src="@recommendation.Movie.PosterUri" alt="@recommendation.Movie.Description"></li>    
+                        }
+                    </ul>
+                </div>
+
+                <div class="glide__arrows" data-glide-el="controls">
+                    <button class="glide__arrow glide__arrow--left" data-glide-dir="<">❮</button>
+                    <button class="glide__arrow glide__arrow--right" data-glide-dir=">">❯</button>
+                </div>
             </div>
+        }
+        else
+        {
+            <p>Model is not trained yet. Try again later...</p>       
+        }
 
-            <div class="glide__arrows" data-glide-el="controls">
-                <button class="glide__arrow glide__arrow--left" data-glide-dir="<">❮</button>
-                <button class="glide__arrow glide__arrow--right" data-glide-dir=">">❯</button>
-            </div>
-        </div>
-
-
-        <button class="configure-button" @onclick="TriggerPreferences">Adjust your preferences</button>
-
-    
+        <button class="configure-button" @onclick="TriggerPreferencesAsync">Adjust your preferences</button>
     </div>
     
     <div class="preferences-overlay @(!showPreferences ? "hidden" : "")">
@@ -57,7 +56,7 @@
             <h1 class="preferences-overlay__title">How would you rate these movie genres?</h1>
             <div class="preferences-overlay__body" id="react-container"></div>
             <div class="preferences-overlay__actions">
-                <button class="continue-button" @onclick="TriggerPreferences">Save & continue</button>
+                <button class="continue-button" @onclick="TriggerPreferencesAsync">Save & continue</button>
             </div>
         </div>
     </div>
@@ -65,16 +64,12 @@
 
 
 
-<script>
-    
-</script>
-
-
 @code {
     private bool showPreferences = false;
+    private bool modelTrained = true;
     private DotNetObjectReference<Home>? _objectReference;
-    private List<String> _recommendations = new ();
-    private async Task TriggerPreferences()
+    private List<Recommendation> _recommendations = new ();
+    private async Task TriggerPreferencesAsync()
     {
         showPreferences = !showPreferences;
         await JSRuntime.InvokeAsync<string>("ReactUserPreferences.triggerPreferences");
@@ -105,6 +100,16 @@
         {
             _recommendations = await RecommendationsHttpService.GetRecommendations();
         }
+        catch (CookieNotSetException)
+        {
+            Logger.LogWarning("No cookie found");
+            await TriggerPreferencesAsync();
+        }
+        catch (ModelNotReadyException)
+        {
+            modelTrained = false;
+            Logger.LogWarning("Model is being trained now. Try again later...");
+        }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to get recommendations");
@@ -121,11 +126,16 @@
                 "ReactUserPreferences.renderComponent", 
                 "react-container"
             );
+        }
+
+        if ((_recommendations?.Count ?? 0) > 0)
+        {
             await JSRuntime.InvokeVoidAsync(
                 "MoviesSlideshow.renderComponent", 
                 ".glide"
             );
         }
+        
     }
     
 }

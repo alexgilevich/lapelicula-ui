@@ -1,4 +1,5 @@
 using System.Buffers.Text;
+using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Logging;
 
@@ -55,7 +56,10 @@ public class UserPreferencesEncoder(ILogger<UserPreferencesEncoder> logger) : IU
         {
             byte[] base64Bytes = Convert.FromBase64String(preferencesEncodedStr);
             string decodedText = System.Text.Encoding.UTF8.GetString(base64Bytes);
-            double[] decodedGenrePreferences = decodedText.Split(',').Select(Convert.ToDouble).ToArray();
+            double[] decodedGenrePreferences = decodedText
+                .Split(',')
+                .Select(x => Convert.ToDouble(x, new NumberFormatInfo { NumberDecimalSeparator = "." }))
+                .ToArray();
 
             preferences = new UserPreferences
             {

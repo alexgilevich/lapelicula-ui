@@ -9,7 +9,7 @@ builder.Services
     .AddLogging()
     .AddScoped<IUserPreferencesEncoder, UserPreferencesEncoder>()
     .AddScoped<IRecommendationsHttpService, RecommendationsHttpService>()
-    .AddScoped<HttpClient>(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+    .AddScoped<HttpClient>(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
