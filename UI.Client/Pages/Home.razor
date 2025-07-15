@@ -32,7 +32,18 @@
                     <ul class="glide__slides">
                         @foreach (var recommendation in _recommendations)
                         {
-                            <li class="glide__slide"><img src="@recommendation.Movie.PosterUri" alt="@recommendation.Movie.Description"></li>    
+                            <li class="glide__slide">
+                                <div class="glide__slide-image-container">
+                                    <img src="@recommendation.Movie.PosterUri" alt="@recommendation.Movie.Description">
+                                    <a href="@($"https://www.themoviedb.org/movie/{recommendation.Movie.TmdbId}")" target="_blank" class="glide__slide-image-overlay">
+                                        <p class="glide__slide-description">@recommendation.Movie.Description</p>
+                                        <p class="glide__slide-genres">@string.Join(", ", recommendation.Movie.Genres)</p>
+                                    </a>
+                                    <div class="glide__slide-rating">@recommendation.Rating.ToString("F1")</div>
+                                </div>
+                                
+                                <p class="glide__slide-title">@recommendation.Movie.Title (@recommendation.Movie.Year)</p>
+                            </li>    
                         }
                     </ul>
                 </div>

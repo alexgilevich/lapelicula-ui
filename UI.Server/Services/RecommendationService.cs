@@ -26,7 +26,7 @@ public class RecommendationService(IMovieRepository _movieRepository, IUserPrefe
         foreach ((long movieId, double rating) in rawRecommendations)
         {
             var movie = await _movieRepository.GetMovieById(movieId);
-            result.Add(new Recommendation(movie, rating));
+            result.Add(new Recommendation(movie, Math.Floor(rating / 0.5) * 0.5));
         }
 
         var recommendationArr = result.ToArray();
