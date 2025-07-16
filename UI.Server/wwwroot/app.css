@@ -31,6 +31,8 @@ header {
     font-size: 1.25rem;
     font-weight: bold;
     color: var(--text-light);
+    display: block;
+    text-decoration: none;
 }
 
 .logo__subtext {
