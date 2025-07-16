@@ -2,17 +2,28 @@
 @rendermode InteractiveWebAssembly
 
 
-<PageTitle>La Pelicula – About</PageTitle>
+<PageTitle>La Pelicula – What's the fuzz about?</PageTitle>
 
 
 <main>
-    <div>
-        <section class="hero">
-            <h1>About project</h1>
-            <p>¡Hola! The author of the project La Pelicula is on the line.</p>
+    <div class="project-info">
+        <div class="project-info__column">
+            <div class="project-info__logo"></div>
+            <div class="project-info__attribution">
+                <h2>Attribution</h2>
+                <ul>
+                    <li><a href="https://github.com/kno10/python-kmedoids" target="_blank">KMedoids</a> – k-means algorithm alternative</li>
+                    <li><a href="https://grouplens.org/datasets/movielens/" target="_blank">MovieLens</a> dataset</li>
+                    <li><a href="https://www.flaticon.com/free-icons/watching-a-movie" title="watching a movie icons">Flaticon</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="project-info__explanation">
+            <h1>¡Hola!</h1>
+            <p> The author of the project La Pelicula is on the line.</p>
             <p>
                 The project you are looking at right now was conceived as an experiment to test out a new technology announced at Microsoft Build 2025.
-                When I heard about this, I thought it would be great to see it in practice. And, because I was thinking about building my own recommender system for quite some time, I thought that it is my chance.  
+                When I heard about this, I thought it would be great to see it in practice. And, because I was thinking about building my own recommender system for quite some time, I thought that it is my chance.
                 Thus, the project was born.
             </p>
             <p>
@@ -23,18 +34,23 @@
                 So, if you are struggling to choose which movie to watch tonight (with your friends, family or partner), then you have landed on the right page!
             </p>
             <p>
-                Now, going slightly more technical, it is based on a simple content-based neural network model which was trained using TensorFlow and Python. Neural Network was trained on the simplest dataset  UI is implemented on top of Blazor, React, C# and JavaScript.<br/>The data used for training is the <a href="https://grouplens.org/datasets/movielens/" target="_blank">MovieLens dataset</a> from <a href="https://grouplens.org/">GroupLens Research</a>, , a research group at the University of Minnesota.
+                Now, going slightly more technical, it is based on a simple content-based neural network model which was trained using TensorFlow and Python. Neural Network was trained on the simplest dataset UI is implemented on top of Blazor, React, C# and JavaScript.<br/>The data used for training is the <a href="https://grouplens.org/datasets/movielens/" target="_blank">MovieLens dataset</a> from <a href="https://grouplens.org/">GroupLens Research</a>, , a research group at the University of Minnesota.
             </p>
             <p>
                 The project is completely free to use and open-source. You can actually <a href="https://github.com/alexgilevich/lapelicula-ml" target="_blank">contribute</a> to the project's source code if you'd like. However, as you might imagine, everything has a cost. I pay for the hosting and other things. <br/>If you would like to support this project or, more general, what I am doing, you might <a href="https://coff.ee/alexgilevich" target="_blank">buy me a coffee</a>
             </p>
-            
-            <h2>About author</h2>
-            <p><a href="https://www.buymeacoffee.com/alexgilevich" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a></p>
-            
-            
-        </section>
+            <div class="project-info__contributor-info">
+                Alexandr Gilevich
+                <br/>
+                Author of the project
+                <br/>
+                <a href="https://www.buymeacoffee.com/alexgilevich" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;"></a>
+            </div>
+        </div>
+
+        
     </div>
+   
     
 </main>
 

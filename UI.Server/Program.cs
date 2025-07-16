@@ -1,9 +1,11 @@
 using LaPelicula.UI.Server.Components;
 using CSnakes.Runtime;
 using CSnakes.Runtime.Locators;
+using LaPelicula.UI.Client.Services;
 using LaPelicula.UI.Server.Services;
 using LaPelicula.UI.Shared;
 using Microsoft.Extensions.Internal;
+using UI.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,7 @@ builder.Services
     .AddSingleton<ITensorFlowModelService, TensorFlowModelService>()
     .AddSingleton<IMovieRepository, InMemoryMovieRepository>()
     .AddSingleton<IRecommendationService, RecommendationService>()
+    .AddSingleton<IRecommendationsHttpService, PrerenderedRecommendationsHttpService>()
     .AddHttpContextAccessor()
     .AddControllers();
 

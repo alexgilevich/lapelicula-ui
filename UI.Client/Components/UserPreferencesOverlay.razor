@@ -1,0 +1,65 @@
+@using LaPelicula.UI.Shared
+@inject IJSRuntime JsRuntime
+@inject IUserPreferencesEncoder UserPreferencesEncoder
+
+<div class="preferences-overlay @(!_shown ? "hidden" : "")">
+    <div class="preferences-overlay__container">
+        <h1 class="preferences-overlay__title">How would you rate these movie genres?</h1>
+        <div class="preferences-overlay__body" id="react-container"></div>
+        <div class="preferences-overlay__actions">
+            <button class="continue-button" @onclick="TriggerAsync">Save & continue</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool _shown;
+    private DotNetObjectReference<UserPreferencesOverlay>? _objectReference;
+    
+    [Parameter]
+    public EventCallback<bool> ShownChanged { get; set; }
+    
+    public async Task TriggerAsync()
+    {
+        _shown = !_shown;
+        await ShownChanged.InvokeAsync(_shown);
+        await JsRuntime.InvokeAsync<string>("ReactUserPreferences.triggerPreferences");
+    }
+
+    [JSInvokable]
+    public string Encode(IDictionary<string, double>? preferencesDict)
+    {
+        if (preferencesDict is null)
+        {
+            return String.Empty;
+        }
+
+        var userPreferences = UserPreferences.FromDictionary(preferencesDict);
+        return UserPreferencesEncoder.Encode(userPreferences);
+    }
+
+    [JSInvokable]
+    public IDictionary<string, double> Decode(string? encodedGenrePreferences)
+    {
+        return UserPreferencesEncoder.Decode(encodedGenrePreferences)
+            .ToDictionary();
+    }
+
+    protected override void OnInitialized()
+    {
+        _objectReference = DotNetObjectReference.Create(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeAsync<string>("ReactUserPreferences.persistBlazorObject", _objectReference);
+            await JsRuntime.InvokeVoidAsync(
+                "ReactUserPreferences.renderComponent",
+                "react-container"
+            );
+        }
+    }
+
+}

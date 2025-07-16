@@ -3,25 +3,6 @@ using UI.Shared;
 
 namespace LaPelicula.UI.Client.Services;
 
-public class ModelNotReadyException : Exception
-{
-    public ModelNotReadyException() : base("Model is not ready yet")
-    {
-    }
-}
-
-public class CookieNotSetException : Exception
-{
-    public CookieNotSetException() : base("Define preferences first")
-    {
-    }
-}
-
-public interface IRecommendationsHttpService
-{
-    Task<List<Recommendation>> GetRecommendations();
-}
-
 public class RecommendationsHttpService(HttpClient httpClient) : IRecommendationsHttpService
 {
     public async Task<List<Recommendation>> GetRecommendations()
@@ -45,3 +26,8 @@ public class RecommendationsHttpService(HttpClient httpClient) : IRecommendation
         return JsonSerializer.Deserialize<List<Recommendation>>(content, options) ?? throw new InvalidOperationException();
     }
 }
+
+
+public class ModelNotReadyException() : Exception("Model is not ready yet");
+
+public class CookieNotSetException() : Exception("Define preferences first");

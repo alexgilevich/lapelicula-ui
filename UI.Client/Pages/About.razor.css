@@ -1,0 +1,67 @@
+.project-info {
+    display: flex;
+    width: 100%;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+
+.project-info__column {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 600px; /* allow shrinking but no growing */
+    max-width: 600px;
+    min-width: 400px;
+}
+
+.project-info__contributor-info {
+    text-align: right;
+    font-style: italic;
+    padding-right: 50px;
+    
+}
+
+.project-info__explanation {
+    padding: 0 50px;
+    flex: 1 1 auto;
+    min-width: 350px;
+    box-sizing: border-box;
+}
+
+.project-info__logo {
+    display: block;
+    height: 512px;
+    background-image: url("/images/watching-a-movie.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.project-info__attribution {
+    display: block;
+    padding: 0 20px;
+}
+
+.project-info__attribution, .project-info__logo {
+    flex: 0 1 auto; 
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1000px) {
+    .project-info {
+        flex-direction: column;
+    }
+    .project-info__column, .project-info__explanation  {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .project-info__explanation {
+        padding: 0 10px;
+    }
+}

@@ -1,149 +1,43 @@
 ﻿@page "/"
-@using global::UI.Shared
-@using LaPelicula.UI.Client.Services
-@using LaPelicula.UI.Shared
-@inject IJSRuntime JSRuntime
-@inject IUserPreferencesEncoder UserPreferencesEncoder
-@inject IRecommendationsHttpService RecommendationsHttpService
-@inject ILogger<Home> Logger
-@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@using LaPelicula.UI.Client.Components
+@rendermode InteractiveWebAssembly
 
 
 <PageTitle>La Pelicula – Pick a movie to watch</PageTitle>
 
 
 <main>
-    <div class="recommendations-slideshow @(showPreferences ? "hidden" : "")">
+    <div class="content-wrapper @(_showMovies ? "" : "hidden")">
         <section class="hero">
             <h1>You might like <span class="highlight">these movies</span></h1>
             <p>A carefully curated collection of movies selected just for you.</p>
         </section>
-        @if (modelTrained)
-        {
-            <div class="glide">
-                <div class="gradient-overlay overlay-left"></div>
-                <div class="gradient-overlay overlay-right"></div>
-
-                <div class="glide__track" data-glide-el="track">
-                    
-                    <ul class="glide__slides">
-                        @foreach (var recommendation in _recommendations)
-                        {
-                            <li class="glide__slide">
-                                <div class="glide__slide-image-container">
-                                    <img src="@recommendation.Movie.PosterUri" alt="@recommendation.Movie.Description">
-                                    <a href="@($"https://www.themoviedb.org/movie/{recommendation.Movie.TmdbId}")" target="_blank" class="glide__slide-image-overlay">
-                                        <p class="glide__slide-description">@recommendation.Movie.Description</p>
-                                        <p class="glide__slide-genres">@string.Join(", ", recommendation.Movie.Genres)</p>
-                                    </a>
-                                    <div class="glide__slide-rating">@recommendation.Rating.ToString("F1")</div>
-                                </div>
-                                
-                                <p class="glide__slide-title">@recommendation.Movie.Title (@recommendation.Movie.Year)</p>
-                            </li>    
-                        }
-                    </ul>
-                </div>
-
-                <div class="glide__arrows" data-glide-el="controls">
-                    <button class="glide__arrow glide__arrow--left" data-glide-dir="<">❮</button>
-                    <button class="glide__arrow glide__arrow--right" data-glide-dir=">">❯</button>
-                </div>
-            </div>
-        }
-        else
-        {
-            <p>Model is not trained yet. Try again later...</p>       
-        }
-
+        
+        <MovieSlideshow NoCookieFound="NoCookieFoundAsync"></MovieSlideshow>
+        
         <button class="configure-button" @onclick="TriggerPreferencesAsync">Adjust your preferences</button>
     </div>
+    <UserPreferencesOverlay @ref="_userPreferencesOverlay" ShownChanged="OnOverlayVisibilityChanged"></UserPreferencesOverlay>
     
-    <div class="preferences-overlay @(!showPreferences ? "hidden" : "")">
-        <div class="preferences-overlay__container">
-            <h1 class="preferences-overlay__title">How would you rate these movie genres?</h1>
-            <div class="preferences-overlay__body" id="react-container"></div>
-            <div class="preferences-overlay__actions">
-                <button class="continue-button" @onclick="TriggerPreferencesAsync">Save & continue</button>
-            </div>
-        </div>
-    </div>
 </main>
 
 
 
 @code {
-    private bool showPreferences = false;
-    private bool modelTrained = true;
-    private DotNetObjectReference<Home>? _objectReference;
-    private List<Recommendation> _recommendations = new ();
-    private async Task TriggerPreferencesAsync()
+    private UserPreferencesOverlay? _userPreferencesOverlay;
+    private bool _showMovies = true;
+    
+    private void OnOverlayVisibilityChanged(bool shown)
     {
-        showPreferences = !showPreferences;
-        await JSRuntime.InvokeAsync<string>("ReactUserPreferences.triggerPreferences");
+        _showMovies = !shown;
     }
     
-    [JSInvokable]
-    public string Encode(IDictionary<string, double> preferencesDict)
+    private async Task TriggerPreferencesAsync() =>  
+        await (_userPreferencesOverlay?.TriggerAsync() ?? Task.FromException(new InvalidOperationException("Component reference is null")));
+
+    private async Task NoCookieFoundAsync()
     {
-        if (preferencesDict is null)
-        {
-            return String.Empty;
-        }
-        var userPreferences = UserPreferences.FromDictionary(preferencesDict);
-        return UserPreferencesEncoder.Encode(userPreferences);
-    }
-    
-    [JSInvokable]
-    public IDictionary<string, double> Decode(string encodedGenrePreferences)
-    {
-        return UserPreferencesEncoder.Decode(encodedGenrePreferences)
-            .ToDictionary();
+        await TriggerPreferencesAsync();
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        _objectReference = DotNetObjectReference.Create(this);
-        try
-        {
-            _recommendations = await RecommendationsHttpService.GetRecommendations();
-        }
-        catch (CookieNotSetException)
-        {
-            Logger.LogWarning("No cookie found");
-            await TriggerPreferencesAsync();
-        }
-        catch (ModelNotReadyException)
-        {
-            modelTrained = false;
-            Logger.LogWarning("Model is being trained now. Try again later...");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to get recommendations");
-        }        
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeAsync<string>("ReactUserPreferences.persistBlazorObject", _objectReference);
-            
-            await JSRuntime.InvokeVoidAsync(
-                "ReactUserPreferences.renderComponent", 
-                "react-container"
-            );
-        }
-
-        if ((_recommendations?.Count ?? 0) > 0)
-        {
-            await JSRuntime.InvokeVoidAsync(
-                "MoviesSlideshow.renderComponent", 
-                ".glide"
-            );
-        }
-        
-    }
-    
 }

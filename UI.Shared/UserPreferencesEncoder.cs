@@ -7,7 +7,7 @@ namespace LaPelicula.UI.Shared;
 
 public interface IUserPreferencesEncoder
 {
-    UserPreferences Decode(string preferencesEncodedStr);
+    UserPreferences Decode(string? preferencesEncodedStr);
     string Encode(UserPreferences preferences);
 }
 
@@ -47,7 +47,7 @@ public class UserPreferencesEncoder(ILogger<UserPreferencesEncoder> logger) : IU
         return base64Encoded;
     }
     
-    public UserPreferences Decode(string preferencesEncodedStr)
+    public UserPreferences Decode(string? preferencesEncodedStr)
     {
         UserPreferences preferences = new();
         if (string.IsNullOrEmpty(preferencesEncodedStr)) 

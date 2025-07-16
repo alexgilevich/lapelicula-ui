@@ -1,29 +1,56 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <base href="/"/>
     <link rel="stylesheet" href="@Assets["app.css"]"/>
     <link rel="stylesheet" href="@Assets["LaPelicula.UI.Server.styles.css"]"/>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <ImportMap/>
     <link rel="icon" type="image/png" href="favicon.png"/>
     <HeadOutlet/>
 </head>
-
 <body>
-<Routes/>
+  <Routes/>
+
+  <script src="_framework/blazor.web.js"></script>
+  <script src="@Assets["lib/ReactUserPreferences/dist/component.bundle.js"]"></script>
+  <script src="@Assets["lib/MoviesSlideshow/dist/component.bundle.js"]"></script>
 
 
-<script src="_framework/blazor.web.js"></script>
-<environment names="Development">
-    <script src="_framework/aspnetcore-browser-refresh.js"></script>
-</environment>
-<script src="@Assets["lib/ReactUserPreferences/dist/component.bundle.js"]"></script>
-<script src="@Assets["lib/MoviesSlideshow/dist/component.bundle.js"]"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+  <script>
+    window.addEventListener("load", function() {
+      function load_ga() {
+          
+      }
 
+      window.cookieconsent.initialise({
+        type: 'info',
+        revokable: false,
+        hasTransition: false,
+        palette: {
+          popup: {background: "#2c2c2c"},
+          button: {background: "#009efb"}
+        },
+        content: {
+          message: "This site uses cookies to enhance your experience and analyze general traffic information",
+          dismiss: "OK, got it",
+          link: "Learn more",
+          href: "/privacy.html"
+        },
+        onInitialise: function (status) {
+          load_ga(status)
+        },
+        onStatusChange: function (status, chosenBefore) {
+          if (!chosenBefore)
+            load_ga(status)
+        }
+      });
+    });
+  </script>
+  
+<!-- ADDITIONAL SCRIPTS FOLLOW HERE -->
 </body>
 
 </html>
