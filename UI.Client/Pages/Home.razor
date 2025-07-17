@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using LaPelicula.UI.Client.Components
+@inject IJSRuntime JsRuntime
 @rendermode InteractiveWebAssembly
 
 
@@ -39,5 +40,15 @@
     {
         await TriggerPreferencesAsync();
     }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // on the backend during prerendering OnAfterRenderAsync is not called giving us our desired behavior – the loading indicator will be shown over the prerendered stubbed recommendations
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("hideAppLoadingIndicator");
+        }
+    }
+    
 
 }

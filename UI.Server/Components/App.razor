@@ -1,25 +1,48 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <base href="/"/>
-    <link rel="stylesheet" href="@Assets["app.css"]"/>
-    <link rel="stylesheet" href="@Assets["LaPelicula.UI.Server.styles.css"]"/>
-    <ImportMap/>
-    <link rel="icon" type="image/png" href="favicon.png"/>
-    <HeadOutlet/>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <base href="/"/>
+  <link rel="stylesheet" href="@Assets["app.css"]"/>
+  <link rel="stylesheet" href="@Assets["LaPelicula.UI.Server.styles.css"]"/>
+  <ImportMap/>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <HeadOutlet/>
 </head>
-<body>
+<body class="blazor-app_loading">
+  <div class="blazor-app__loading-overlay">
+  <svg class="loading-progress">
+    <circle r="40%" cx="50%" cy="50%" />
+    <circle r="40%" cx="50%" cy="50%" />
+  </svg>
+  <div class="loading-progress-text"></div>
+  </div>
+
   <Routes/>
 
-  <script src="_framework/blazor.web.js"></script>
+
   <script src="@Assets["lib/ReactUserPreferences/dist/component.bundle.js"]"></script>
   <script src="@Assets["lib/MoviesSlideshow/dist/component.bundle.js"]"></script>
+  <script type="text/javascript">
+    // for SEO purposes prerendered "stubbed recommendations" are displayed
+    // but server-side rendering is noticeable by the user in most cases by the naked eye
+    // thus we have to make sure that the prerendered recommendations are displayed correctly and not get overblown in width and height
+    // it's possible to do it with CSS only but it's not worth it as in this case it is necessary to simulate Glide sizing logic with CSS
+    if (document.querySelector('.glide')) {
+      MoviesSlideshow.renderComponent('.glide');
+    }
+    
+    // blazor does not allow to get an html element outside of the app
+    function hideAppLoadingIndicator() {
+      document.querySelector('body').classList.remove('blazor-app_loading');
+    }
+  </script>
 
+<script src="_framework/blazor.web.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
-  <script>
+<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+<script>
     window.addEventListener("load", function() {
       function load_ga() {
           
@@ -49,7 +72,7 @@
       });
     });
   </script>
-  
+
 <!-- ADDITIONAL SCRIPTS FOLLOW HERE -->
 </body>
 

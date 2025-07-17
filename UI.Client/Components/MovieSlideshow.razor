@@ -6,17 +6,17 @@
 @rendermode @(new InteractiveWebAssemblyRenderMode(false))
 
 <div class="recommendations-container">
-    @if (_modelTrained)
-    {
-        <div class="glide">
+    <div class="glide @(_isLoading ? "glide_loading" : string.Empty)">
+        @if (_modelTrained)
+        {
             <div class="gradient-overlay overlay-left"></div>
             <div class="gradient-overlay overlay-right"></div>
 
             <div class="glide__track" data-glide-el="track">
-                <ul class="glide__slides @(_showOverlay ? "glide__slides--show-overlay" : "")">
+                <ul class="glide__slides">
                     @foreach (var recommendation in _recommendations)
                     {
-                        <li class="glide__slide">
+                        <li class="glide__slide" style="width: 300px">
                             <div class="glide__slide-image-container">
                                 <img src="@recommendation.Movie.PosterUri" alt="@recommendation.Movie.Description">
                                 <a href="@($"https://www.themoviedb.org/movie/{recommendation.Movie.TmdbId}")" target="_blank" class="glide__slide-image-overlay">
@@ -25,9 +25,9 @@
                                 </a>
                                 <div class="glide__slide-rating">@recommendation.Rating.ToString("F1")</div>
                             </div>
-                                    
+
                             <p class="glide__slide-title">@recommendation.Movie.Title (@recommendation.Movie.Year)</p>
-                        </li>    
+                        </li>
                     }
                 </ul>
             </div>
@@ -36,21 +36,24 @@
                 <button class="glide__arrow glide__arrow--left" data-glide-dir="<">❮</button>
                 <button class="glide__arrow glide__arrow--right" data-glide-dir=">">❯</button>
             </div>
-        </div>      
-    }
-    else
-    {
-        <p>Model is not trained yet. Try again later...</p>       
-    }
+        }
+        else
+        {
+            <p class="glide_model-not-trained">Model is not trained yet. Try again later...</p>       
+        }
+        <div class="glide__loading-overlay">
+            <span class="glide__loader"></span>
+        </div>
+    </div>
 </div>
+
+
+
 
 @code {
     private bool _modelTrained = true;
-    private bool _showOverlay = false;
-    private bool _awaitingSecondTap = false;
-    
+    private bool _isLoading = true;
     private List<Recommendation> _recommendations = new ();
-    
     
     [Parameter]
     public EventCallback<bool> NoCookieFound { get; set; }
@@ -74,7 +77,14 @@
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to get recommendations");
-        }        
+        }
+        finally
+        {
+            // the loading indicator will be shown over the prerendered stubbed "recommendations" – that's a desired behavior
+            // we are showing popular movies for SEO purposes
+            if (OperatingSystem.IsBrowser())
+                _isLoading = false;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -86,7 +96,6 @@
                 ".glide"
             );
         }
-        
     }
     
 }

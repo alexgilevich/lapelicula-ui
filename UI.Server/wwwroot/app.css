@@ -7,6 +7,7 @@ html, body {
 
 :root {
     --bg-dark: #0f111a;
+    --bg-dark-transparent-50: rgba(15,17,26,0.5);
     --text-light: #e4e4e4;
     --primary: #3c82f6;
 }
@@ -69,6 +70,7 @@ nav a {
     margin: 0 auto;
     position: relative;
     overflow: hidden;
+    min-height: 300px;
 }
 
 .glide__track {
@@ -224,6 +226,76 @@ nav a {
     right: 10px;
 }
 
+.glide_model-not-trained {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+    width: 450px;
+    height: 100px;
+    text-align: center;
+}
+
+.glide__loading-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-dark-transparent-50);
+    display: none;
+    z-index: 10;
+}
+
+.glide__loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+.glide.glide_loading .glide__loading-overlay {
+    display: block;
+}
+
+.blazor-app_loading .glide__loading-overlay {
+    display: none !important;
+}
+
+.blazor-app_loading .blazor-app__loading-overlay {
+    display: block;
+}
+
+.blazor-app__loading-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-dark-transparent-50);
+    display: none;
+    z-index: 10;
+}
+
 .gradient-overlay {
     position: absolute;
     top: 0;
@@ -311,3 +383,38 @@ nav a {
 .content-wrapper.hidden {
     display: none;
 }
+
+
+.loading-progress {
+    position: relative;
+    display: block;
+    width: 8rem;
+    height: 8rem;
+    margin: 20vh auto 1rem auto;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke: #e0e0e0;
+    stroke-width: 0.6rem;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+    stroke: #1b6ec2;
+    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+    transition: stroke-dasharray 0.05s ease-in-out;
+}
+
+.loading-progress-text {
+    position: absolute;
+    text-align: center;
+    font-weight: bold;
+    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+}
+
+.loading-progress-text:after {
+    content: var(--blazor-load-percentage-text, "Loading");
+}
+
