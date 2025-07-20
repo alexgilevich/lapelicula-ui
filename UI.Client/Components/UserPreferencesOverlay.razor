@@ -7,25 +7,51 @@
         <h1 class="preferences-overlay__title">How would you rate these movie genres?</h1>
         <div class="preferences-overlay__body" id="react-container"></div>
         <div class="preferences-overlay__actions">
-            <button class="continue-button" @onclick="TriggerAsync">Save & continue</button>
+            <button class="button button_secondary" style="margin-right: 2vh" @onclick="ResetAsync">Reset</button> 
+            @if (!_isReset)
+            {
+                <button class="button" @onclick="SaveAsync">Save & continue</button>    
+            }
         </div>
     </div>
 </div>
 
 @code {
     private bool _shown;
+    private bool _isReset;
     private DotNetObjectReference<UserPreferencesOverlay>? _objectReference;
     
     [Parameter]
-    public EventCallback<bool> ShownChanged { get; set; }
+    public EventCallback ValueChanged { get; set; }
     
-    public async Task TriggerAsync()
+    [Parameter]
+    public EventCallback<bool> VisibilityChanged { get; set; }
+    
+    public async Task ResetAsync()
+    {
+        await JsRuntime.InvokeAsync<string>("ReactUserPreferences.resetPreferences");
+    }
+    
+    public async Task TriggerPreferencesAsync()
     {
         _shown = !_shown;
-        await ShownChanged.InvokeAsync(_shown);
+        await VisibilityChanged.InvokeAsync(_shown);
         await JsRuntime.InvokeAsync<string>("ReactUserPreferences.triggerPreferences");
     }
-
+    
+    public async Task SaveAsync()
+    {
+        await TriggerPreferencesAsync();
+        await ValueChanged.InvokeAsync();
+    }
+    
+    [JSInvokable]
+    public void ShowSaveButton(bool shown)
+    {
+        _isReset = !shown;
+        StateHasChanged();
+    }
+    
     [JSInvokable]
     public string Encode(IDictionary<string, double>? preferencesDict)
     {

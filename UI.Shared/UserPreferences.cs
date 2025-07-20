@@ -20,11 +20,6 @@ public class UserPreferences
 
     public UserPreferences()
     {
-        Action = 4.0;
-        Adventure = 4.5;
-        Mystery = 5;
-        Horror = 0;
-        Scifi = 4;
     }
     
     public Dictionary<string, double> ToDictionary()

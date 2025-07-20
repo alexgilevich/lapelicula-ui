@@ -10,6 +10,7 @@ html, body {
     --bg-dark-transparent-50: rgba(15,17,26,0.5);
     --text-light: #e4e4e4;
     --primary: #3c82f6;
+    --secondary: rgba(189, 188, 188, 0.84);
 }
 
 body {
@@ -150,7 +151,7 @@ nav a {
     pointer-events: none;
 }
 
-.glide__slides--show-overlay .glide__slide-image-overlay {
+.glide__slide_show-overlay .glide__slide-image-overlay {
     display: block;
     pointer-events: all;
 }
@@ -176,13 +177,6 @@ nav a {
     
 }
 
-@media (max-width: 500px) {
-    .glide__slide-description {
-        font-size: 1.1rem;
-    }
-}
-
-
 .glide__slide-genres {
     display: block;
     height: 1.5em;
@@ -191,6 +185,13 @@ nav a {
     text-overflow: ellipsis;
     color: var(--text-light);
     padding: 0 10px;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 500px) {
+    .glide__slide-description, .glide__slide-genres {
+        font-size: 1.1rem;
+    }
 }
 
 
@@ -315,21 +316,9 @@ nav a {
     background: linear-gradient(to left, rgba(15,17,26,0.8) 30%, rgba(15,17,26,0));
 }
 
-.configure-button {
-    display: block;
-    margin: 1rem auto;
-    padding: 0.5rem 1.5rem;
-    font-size: 1rem;
-    color: var(--primary);
-    border: 2px solid var(--primary);
-    border-radius: 999px;
-    background: transparent;
-    cursor: pointer;
-}
 
-.continue-button {
+.button {
     display: inline-block;
-    margin: 2rem 3rem 0 0px;
     padding: 0.5rem 1.5rem;
     font-size: 1rem;
     color: var(--primary);
@@ -339,7 +328,16 @@ nav a {
     cursor: pointer;
 }
 
+.button_secondary {
+    color: var(--secondary);
+    border: 2px solid var(--secondary);
+}
 
+.actions-panel {
+    display: block;
+    text-align: center;
+    margin: auto 1rem;
+}
 
 .preferences-overlay {
     position: fixed;
@@ -374,6 +372,7 @@ nav a {
     padding: 2rem;
     position: absolute;
     top: 0;
+    min-width: 300px;
 }
 
 .preferences-overlay__actions {

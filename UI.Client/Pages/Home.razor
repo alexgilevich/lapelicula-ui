@@ -14,11 +14,13 @@
             <p>A carefully curated collection of movies selected just for you.</p>
         </section>
         
-        <MovieSlideshow NoCookieFound="NoCookieFoundAsync"></MovieSlideshow>
+        <MovieSlideshow @ref="_movieSlideshow" NoCookieFound="NoCookieFoundAsync"></MovieSlideshow>
         
-        <button class="configure-button" @onclick="TriggerPreferencesAsync">Adjust your preferences</button>
+        <div class="actions-panel">
+            <button class="button" @onclick="TriggerPreferencesAsync">Adjust your preferences</button>
+        </div>
     </div>
-    <UserPreferencesOverlay @ref="_userPreferencesOverlay" ShownChanged="OnOverlayVisibilityChanged"></UserPreferencesOverlay>
+    <UserPreferencesOverlay @ref="_userPreferencesOverlay" VisibilityChanged="OnOverlayVisibilityChanged" ValueChanged="RefreshRecommendationsAsync"></UserPreferencesOverlay>
     
 </main>
 
@@ -26,6 +28,7 @@
 
 @code {
     private UserPreferencesOverlay? _userPreferencesOverlay;
+    private MovieSlideshow? _movieSlideshow;
     private bool _showMovies = true;
     
     private void OnOverlayVisibilityChanged(bool shown)
@@ -34,7 +37,7 @@
     }
     
     private async Task TriggerPreferencesAsync() =>  
-        await (_userPreferencesOverlay?.TriggerAsync() ?? Task.FromException(new InvalidOperationException("Component reference is null")));
+        await (_userPreferencesOverlay?.TriggerPreferencesAsync() ?? Task.FromException(new InvalidOperationException("Component reference is null")));
 
     private async Task NoCookieFoundAsync()
     {
@@ -49,6 +52,11 @@
             await JsRuntime.InvokeVoidAsync("hideAppLoadingIndicator");
         }
     }
-    
+
+
+    private async Task RefreshRecommendationsAsync()
+    {
+        await (_movieSlideshow?.RefreshAsync() ?? Task.FromException(new InvalidOperationException("Component reference is null")));
+    }
 
 }
