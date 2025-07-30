@@ -41,6 +41,7 @@
 
     private async Task NoCookieFoundAsync()
     {
+        await Task.Delay(100); // workaround to resolve the Blazor bug when in Safari OnAfterRenderAsync in UserPreferencesOverlay component is not executed
         await TriggerPreferencesAsync();
     }
     

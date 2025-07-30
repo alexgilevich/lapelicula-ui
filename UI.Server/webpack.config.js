@@ -1,16 +1,13 @@
 const path = require('path');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const webpack = require('webpack');
 
 module.exports = {
-    entry: {
-        'ReactUserPreferences': './wwwroot/lib/ReactUserPreferences/component.js',
-        'MoviesSlideshow': './wwwroot/lib/MoviesSlideshow/component.js',
-    }, // Source directory and entry file
+    entry: './wwwroot/lib/index.js', // Source directory and entry file
     output: {
-        path: path.resolve(__dirname, 'wwwroot/lib/'), // Output directory
-        filename: '[name]/dist/component.bundle.js', // Output file name
-        libraryTarget: 'umd',
-        library: '[name]',
-        globalObject: 'this'
+        path: path.resolve(__dirname, 'wwwroot/lib/dist/'), // Output directory
+        filename: 'components.bundle.js', // Output file name
+        clean: true
     },
     module: {
         rules: [
@@ -30,13 +27,13 @@ module.exports = {
             },
             {
                 test: /\.css$/i,
-                use: ["style-loader", "css-loader"],
+                use: [MiniCssExtractPlugin.loader, "css-loader"],
             },
             {
                 test: /\.s[ac]ss$/i,
                 use: [
-                    // Creates `style` nodes from JS strings
-                    "style-loader",
+                    // Extracts styles into a separate CSS file
+                    MiniCssExtractPlugin.loader,
                     // Translates CSS into CommonJS
                     "css-loader",
                     // Compiles Sass to CSS
@@ -49,6 +46,10 @@ module.exports = {
     resolve: {
         extensions: ['.js', '.jsx'], // Resolve these extensions
     },
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: 'styles.css' // You can also use '[name].[contenthash].css' for caching
+        })
+    ],
     devtool: 'source-map',
-    mode: 'development', // Set mode to 'development' or 'production'
 };

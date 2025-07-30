@@ -1,30 +1,41 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Pick your next movie to watch tonight with carefully crafted recommendations just for you and your preferences">
   <base href="/"/>
   <link rel="stylesheet" href="@Assets["app.css"]"/>
   <link rel="stylesheet" href="@Assets["LaPelicula.UI.Server.styles.css"]"/>
+  <link rel="stylesheet" href="@Assets["lib/dist/styles.css"]"/>
+  <!-- ADDITIONAL STYLESHEETS FOLLOW HERE  -->
   <ImportMap/>
   <link rel="icon" type="image/png" href="favicon.png"/>
   <HeadOutlet/>
 </head>
-<body class="blazor-app_loading">
-  <div class="blazor-app__loading-overlay">
+<body>
+
+<div data-permanent>
+  <!-- workaround for blazor to not show app loading indicator every time when blazor refreshes the html content of the page, so it is shown only the first time the user opens the page  -->
+  <script type="text/javascript">
+    document.querySelector('body').classList.add('blazor-app_loading');
+  </script>
+</div>
+
+
+<div class="blazor-app__loading-overlay">
   <svg class="loading-progress">
-    <circle r="40%" cx="50%" cy="50%" />
-    <circle r="40%" cx="50%" cy="50%" />
+    <circle r="40%" cx="50%" cy="50%"/>
+    <circle r="40%" cx="50%" cy="50%"/>
   </svg>
   <div class="loading-progress-text"></div>
-  </div>
+</div>
 
-  <Routes/>
+<Routes/>
 
 
-  <script src="@Assets["lib/ReactUserPreferences/dist/component.bundle.js"]"></script>
-  <script src="@Assets["lib/MoviesSlideshow/dist/component.bundle.js"]"></script>
-  <script type="text/javascript">
+<script src="@Assets["lib/dist/components.bundle.js"]"></script>
+<script type="text/javascript">
     // for SEO purposes prerendered "stubbed recommendations" are displayed
     // but server-side rendering is noticeable by the user in most cases by the naked eye
     // thus we have to make sure that the prerendered recommendations are displayed correctly and not get overblown in width and height
@@ -40,38 +51,6 @@
   </script>
 
 <script src="_framework/blazor.web.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
-<script>
-    window.addEventListener("load", function() {
-      function load_ga() {
-          
-      }
-
-      window.cookieconsent.initialise({
-        type: 'info',
-        revokable: false,
-        hasTransition: false,
-        palette: {
-          popup: {background: "#2c2c2c"},
-          button: {background: "#009efb"}
-        },
-        content: {
-          message: "This site uses cookies to enhance your experience and analyze general traffic information",
-          dismiss: "OK, got it",
-          link: "Learn more",
-          href: "/privacy.html"
-        },
-        onInitialise: function (status) {
-          load_ga(status)
-        },
-        onStatusChange: function (status, chosenBefore) {
-          if (!chosenBefore)
-            load_ga(status)
-        }
-      });
-    });
-  </script>
 
 <!-- ADDITIONAL SCRIPTS FOLLOW HERE -->
 </body>

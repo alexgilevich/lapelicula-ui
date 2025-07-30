@@ -5,7 +5,9 @@
 <div class="preferences-overlay @(!_shown ? "hidden" : "")">
     <div class="preferences-overlay__container">
         <h1 class="preferences-overlay__title">How would you rate these movie genres?</h1>
-        <div class="preferences-overlay__body" id="react-container"></div>
+        <div data-permanent>
+            <div class="preferences-overlay__body" id="react-container"></div>
+        </div>
         <div class="preferences-overlay__actions">
             <button class="button button_secondary" style="margin-right: 2vh" @onclick="ResetAsync">Reset</button> 
             @if (!_isReset)

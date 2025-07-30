@@ -17,32 +17,19 @@ public class UserPreferencesEncoder(ILogger<UserPreferencesEncoder> logger) : IU
 
     public string Encode(UserPreferences preferences)
     {
-        // Create an array with the genre values in the same order as decoding expects
-        double[] preferencesArr = new double[]
-        {
-            preferences.Action,
-            preferences.Adventure,
-            preferences.Animation,
-            preferences.Kids,
-            preferences.Comedy,
-            preferences.Crime,
-            preferences.Documentary,
-            preferences.Drama,
-            preferences.Fantasy,
-            preferences.Horror,
-            preferences.Mystery,
-            preferences.Romance,
-            preferences.Scifi,
-            preferences.Thriller
-        };
+        // first convert to dictionary
+        var prefDict = preferences.ToDictionary();
+        
+        // create an array with the genre values in the predefined order
+        double[] preferencesArr = UserPreferences.GetAllGenreKeys().Select(key => prefDict.GetValueOrDefault(key, 0.0)).ToArray();
 
-        // Join the double values as comma-separated string
+        // convert the array to string
         string preferencesStr = string.Join(",", preferencesArr.Select(g => g.ToString(System.Globalization.CultureInfo.InvariantCulture)));
 
-        // Encode the string to UTF8 bytes
+        // encode the string to UTF8 bytes
         byte[] utf8Bytes = Encoding.UTF8.GetBytes(preferencesStr);
 
-        // Convert to Base64 string
+        // convert to Base64 string
         string base64Encoded = Convert.ToBase64String(utf8Bytes);
         return base64Encoded;
     }
@@ -61,23 +48,9 @@ public class UserPreferencesEncoder(ILogger<UserPreferencesEncoder> logger) : IU
                 .Select(x => Convert.ToDouble(x, new NumberFormatInfo { NumberDecimalSeparator = "." }))
                 .ToArray();
 
-            preferences = new UserPreferences
-            {
-                Action = decodedGenrePreferences[0],
-                Adventure = decodedGenrePreferences[1],
-                Animation = decodedGenrePreferences[2],
-                Kids = decodedGenrePreferences[3],
-                Comedy = decodedGenrePreferences[4],
-                Crime = decodedGenrePreferences[5],
-                Documentary = decodedGenrePreferences[6],
-                Drama = decodedGenrePreferences[7],
-                Fantasy = decodedGenrePreferences[8],
-                Horror = decodedGenrePreferences[9],
-                Mystery = decodedGenrePreferences[10],
-                Romance = decodedGenrePreferences[11],
-                Scifi = decodedGenrePreferences[12],
-                Thriller = decodedGenrePreferences[13]
-            };
+            string[] keys = UserPreferences.GetAllGenreKeys();
+            var prefDict = decodedGenrePreferences.Select((val, idx) => new KeyValuePair<string, double>(keys[idx], val)).ToDictionary();
+            preferences = UserPreferences.FromDictionary(prefDict);
         }
         catch (Exception ex)
         {

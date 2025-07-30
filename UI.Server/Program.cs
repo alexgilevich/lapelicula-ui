@@ -4,6 +4,7 @@ using CSnakes.Runtime.Locators;
 using LaPelicula.UI.Client.Services;
 using LaPelicula.UI.Server.Services;
 using LaPelicula.UI.Shared;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Internal;
 using UI.Shared;
 
@@ -14,6 +15,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+// Add Python services to the container.
 var home = Path.Join(Environment.CurrentDirectory, "ml");
 builder.Services
     .WithPython()
@@ -22,6 +24,7 @@ builder.Services
     .WithVirtualEnvironment(Path.Join(home, ".venv"))
     .WithPipInstaller(Path.Join(home, "requirements.txt"));
 
+// Add services to the container.
 builder.Services
     .AddLogging()
     .AddMemoryCache()
@@ -33,12 +36,22 @@ builder.Services
     .AddHttpContextAccessor()
     .AddControllers();
 
+
 // Model training hosted service – immediately starts training when the application starts
 builder.Services.AddHostedService<ModelTrainingHostedService>();
 builder.Services.Configure<HostOptions>(options =>
 {
     //Service Behavior in case of exceptions - defaults to StopHost
     options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+});
+
+// Configure X-Forwarded header for the HSTS and HttpsRedirect middleware to work correctly
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
 var app = builder.Build();
@@ -51,10 +64,13 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // Enable X-Forwarded headers in production
+    app.UseForwardedHeaders();
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
+// Pipeline
 app.UseHttpsRedirection();
 app.UseAntiforgery();
 app.MapStaticAssets();

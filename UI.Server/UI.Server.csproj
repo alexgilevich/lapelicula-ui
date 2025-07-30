@@ -42,6 +42,30 @@
       <None Update="ml\data\content_y_train.csv">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="ml\requirements.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="ml\data\links.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="ml\data\movies.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="ml\data\ratings.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="ml\data\tags.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="ml\data\additional_movie_attributes.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="ml\data\top200_movies.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="ml\tmdb.py">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -53,6 +77,9 @@
 
     <ItemGroup>
       <None Remove="ml\data_pipeline.py" />
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
       <Content Include="ml\data_pipeline.py">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
@@ -71,15 +98,30 @@
       <ProjectReference Include="..\UI.Shared\UI.Shared.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\lib\[name]\dist\MoviesSlideshow.component.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\[name]\dist\MoviesSlideshow.component.js.map" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\[name]\dist\ReactUserPreferences.component.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\[name]\dist\ReactUserPreferences.component.js.map" />
-    </ItemGroup>
 
     <ItemGroup>
       <Folder Include="wwwroot\images\" />
     </ItemGroup>
 
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\lib\MoviesSlideshow\dist\component.bundle.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\lib\MoviesSlideshow\dist\component.bundle.js.map" />
+    </ItemGroup>
+
+    <Target Name="EchoPlatformAndConfiguration" BeforeTargets="BeforeBuild">
+        <Message Text="Configuration is: $(Configuration)" Importance="High" />
+        <Message Text="Platform is: $(Platform)" Importance="High" />
+    </Target>
+    
+    <Target Name="NpmBuildDebug" BeforeTargets="BeforeBuild" Condition="'$(Configuration.ToLower())'=='debug'">
+        <Exec Command="npm install" />
+        <Exec Command="npm run build-dev" />
+    </Target>
+
+    <Target Name="NpmBuildRelease" BeforeTargets="BeforeBuild" Condition="'$(Configuration.ToLower())'=='release'">
+        <Exec Command="npm install" />
+        <Exec Command="npm run build" />
+    </Target>
+    
 </Project>
