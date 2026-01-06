@@ -21,7 +21,7 @@
                                 <img src="@recommendation.Movie.PosterUri" alt="@recommendation.Movie.Description">
                                 <div  class="glide__slide-image-overlay">
                                     <p class="glide__slide-description">@recommendation.Movie.Description</p>
-                                    <p class="glide__slide-genres">@string.Join(", ", recommendation.Movie.Genres)</p>
+                                    <p class="glide__slide-genres">@string.Join(", ", recommendation.Movie.RawGenres)</p>
                                 </div>
                                 <div class="glide__slide-rating">@recommendation.Rating.ToString("F1")</div>
                             </a>
@@ -68,7 +68,7 @@
         try
         {
             _isLoading = true;
-            _recommendations = await RecommendationsHttpService.GetRecommendations();
+            _recommendations = await RecommendationsHttpService.GetRecommendationsAsync();
         }
         catch (CookieNotSetException)
         {

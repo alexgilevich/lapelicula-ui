@@ -5,7 +5,7 @@ namespace LaPelicula.UI.Client.Services;
 
 public class RecommendationsHttpService(HttpClient httpClient) : IRecommendationsHttpService
 {
-    public async Task<List<Recommendation>> GetRecommendations()
+    public async Task<List<Recommendation>> GetRecommendationsAsync()
     {
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var response = await httpClient.GetAsync("api/recommendations");

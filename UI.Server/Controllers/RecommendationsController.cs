@@ -1,4 +1,3 @@
-using LaPelicula.UI.Server.Models;
 using LaPelicula.UI.Server.Services;
 using LaPelicula.UI.Shared;
 using Microsoft.AspNetCore.Mvc;

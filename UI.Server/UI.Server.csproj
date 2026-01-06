@@ -7,13 +7,15 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <RootNamespace>LaPelicula.UI.Server</RootNamespace>
         <AssemblyName>LaPelicula.UI.Server</AssemblyName>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="CSnakes.Runtime" Version="1.1.0" />
       <PackageReference Include="CsvHelper" Version="33.1.0" />
       <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.7" />
-    </ItemGroup>
+      <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.300.38" />
+  </ItemGroup>
 
     <ItemGroup>
       <None Remove="ml\training.py" />
@@ -70,9 +72,8 @@
 
     <ItemGroup>
       <AdditionalFiles Include="Components\Pages\Layout\MainLayout.razor" />
-      <AdditionalFiles Include="ml\recommendation_system.py">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </AdditionalFiles>
+      <None Remove="Python\recommendation_system.py" />
+      <AdditionalFiles Include="Python\recommendation_system.py" />
     </ItemGroup>
 
     <ItemGroup>
@@ -80,17 +81,8 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
-      <Content Include="ml\data_pipeline.py">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="ml\features.py" />
-      <Content Include="ml\features.py">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="ml\model.py" />
-      <Content Include="ml\model.py">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
     </ItemGroup>
 
     <ItemGroup>

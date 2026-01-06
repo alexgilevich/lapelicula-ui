@@ -1,8 +1,11 @@
+using Amazon.DynamoDBv2;
 using LaPelicula.UI.Server.Components;
 using CSnakes.Runtime;
 using CSnakes.Runtime.Locators;
 using LaPelicula.UI.Client.Services;
+using LaPelicula.UI.Server.Common;
 using LaPelicula.UI.Server.Services;
+using LaPelicula.UI.Server.Services.HostedServices;
 using LaPelicula.UI.Shared;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Internal;
@@ -16,7 +19,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 // Add Python services to the container.
-var home = Path.Join(Environment.CurrentDirectory, "ml");
+var home = Path.Join(Environment.CurrentDirectory, "Python");
 builder.Services
     .WithPython()
     .WithHome(home)
@@ -30,11 +33,14 @@ builder.Services
     .AddMemoryCache()
     .AddSingleton<IUserPreferencesEncoder, UserPreferencesEncoder>()
     .AddSingleton<ITensorFlowModelService, TensorFlowModelService>()
-    .AddSingleton<IMovieRepository, InMemoryMovieRepository>()
+    .AddSingleton<IMovieRepository, DynamoDbMovieRepository>()
+    .AddSingleton<IMovieService, MovieService>()
+    .AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>()
     .AddSingleton<IRecommendationService, RecommendationService>()
     .AddSingleton<IRecommendationsHttpService, PrerenderedRecommendationsHttpService>()
     .AddHttpContextAccessor()
     .AddControllers();
+    
 
 
 // Model training hosted service – immediately starts training when the application starts
@@ -53,6 +59,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
+
+builder.Services.Configure<RecommendationsConfig>(builder.Configuration.GetSection("Recommendations"));
 
 var app = builder.Build();
 

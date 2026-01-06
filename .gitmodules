@@ -1,5 +1,1 @@
 
-[submodule "UI.Server/ml"]
-	path = UI.Server/ml
-	url = https://github.com/alexgilevich/lapelicula-ml
-	branch = main
