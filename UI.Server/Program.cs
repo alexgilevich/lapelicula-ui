@@ -23,8 +23,8 @@ var home = Path.Join(Environment.CurrentDirectory, "Python");
 builder.Services
     .WithPython()
     .WithHome(home)
-    .FromRedistributable(RedistributablePythonVersion.Python3_11)
-    .WithVirtualEnvironment(Path.Join(home, ".venv"))
+    .FromRedistributable(RedistributablePythonVersion.Python3_13)
+    .WithVirtualEnvironment(Path.Join(home, ".venv-net"))
     .WithPipInstaller(Path.Join(home, "requirements.txt"));
 
 // Add services to the container.
