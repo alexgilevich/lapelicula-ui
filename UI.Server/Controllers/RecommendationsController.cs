@@ -8,7 +8,7 @@ namespace LaPelicula.UI.Server.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class RecommendationsController(
-    IHttpContextAccessor _httpContextAccessor, IRecommendationService _recommendationService) : ControllerBase
+    IHttpContextAccessor _httpContextAccessor, IRecommendationService _recommendationService, ILogger<RecommendationsController> _logger) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Get()
@@ -22,6 +22,7 @@ public class RecommendationsController(
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error occurred while fetching recommendations");
             return StatusCode(503, new { status = "error", message = "Model is not trained yet", ex = ex.Message } );
         }
     }

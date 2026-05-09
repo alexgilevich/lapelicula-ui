@@ -13,7 +13,7 @@
     <ItemGroup>
       <PackageReference Include="CSnakes.Runtime" Version="1.1.0" />
       <PackageReference Include="CsvHelper" Version="33.1.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.7" />
       <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.300.38" />
   </ItemGroup>
 

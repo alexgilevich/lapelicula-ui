@@ -39,6 +39,7 @@
         _shown = !_shown;
         await VisibilityChanged.InvokeAsync(_shown);
         await JsRuntime.InvokeAsync<string>("ReactUserPreferences.triggerPreferences");
+        StateHasChanged();
     }
     
     public async Task SaveAsync()
