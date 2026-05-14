@@ -12,7 +12,7 @@
   <base href="/"/>
   <link rel="stylesheet" href="@Assets["app.css"]"/>
   <link rel="stylesheet" href="@Assets["LaPelicula.UI.Server.styles.css"]"/>
-  <link rel="stylesheet" href="@Assets["lib/dist/styles.css"]"/>
+  
   <!-- ADDITIONAL STYLESHEETS FOLLOW HERE  -->
   <ImportMap/>
   <link rel="icon" type="image/png" href="favicon.png"/>
@@ -20,35 +20,10 @@
 </head>
 <body>
 
-<div data-permanent>
-  <!-- workaround for blazor to not show app loading indicator every time when blazor refreshes the html content of the page, so it is shown only the first time the user opens the page  -->
-  <script type="text/javascript">
-    document.querySelector('body').classList.add('blazor-app_loading');
-  </script>
-</div>
+<Routes />
 
 
-<div class="blazor-app__loading-overlay">
-  <svg class="loading-progress">
-    <circle r="40%" cx="50%" cy="50%"/>
-    <circle r="40%" cx="50%" cy="50%"/>
-  </svg>
-  <div class="loading-progress-text"></div>
-</div>
-
-<Routes/>
-
-
-<script src="@Assets["lib/dist/components.bundle.js"]"></script>
-<script type="text/javascript">
-    // for SEO purposes prerendered "stubbed recommendations" are displayed
-    // but server-side rendering is noticeable by the user in most cases by the naked eye
-    // thus we have to make sure that the prerendered recommendations are displayed correctly and not get overblown in width and height
-    // it's possible to do it with CSS only but it's not worth it as in this case it is necessary to simulate Glide sizing logic with CSS
-    if (document.querySelector('.glide')) {
-      MoviesSlideshow.renderComponent('.glide');
-    }
-    
+<script type="text/javascript">    
     // blazor does not allow to get an html element outside of the app
     function hideAppLoadingIndicator() {
       document.querySelector('body').classList.remove('blazor-app_loading');

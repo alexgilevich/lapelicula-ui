@@ -2,11 +2,9 @@ using Amazon.DynamoDBv2;
 using LaPelicula.UI.Server.Components;
 using CSnakes.Runtime;
 using CSnakes.Runtime.Locators;
-using LaPelicula.UI.Client.Services;
 using LaPelicula.UI.Server.Common;
 using LaPelicula.UI.Server.Services;
 using LaPelicula.UI.Server.Services.HostedServices;
-using LaPelicula.UI.Shared;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Internal;
 using UI.Shared;
@@ -15,8 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveServerComponents();
 
 // Add Python services to the container.
 var home = Path.Join(Environment.CurrentDirectory, "Python");
@@ -37,9 +34,12 @@ builder.Services
     .AddSingleton<IMovieService, MovieService>()
     .AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>()
     .AddSingleton<IRecommendationService, RecommendationService>()
-    .AddSingleton<IRecommendationsHttpService, PrerenderedRecommendationsHttpService>()
     .AddHttpContextAccessor()
-    .AddControllers();
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
     
 
 
@@ -65,11 +65,7 @@ builder.Services.Configure<RecommendationsConfig>(builder.Configuration.GetSecti
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseWebAssemblyDebugging();
-}
-else
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // Enable X-Forwarded headers in production
@@ -78,13 +74,13 @@ else
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+
 // Pipeline
 app.UseHttpsRedirection();
 app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapControllers();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(LaPelicula.UI.Client._Imports).Assembly);
+    .AddInteractiveServerRenderMode();
 app.Run();

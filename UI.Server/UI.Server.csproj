@@ -13,65 +13,12 @@
     <ItemGroup>
       <PackageReference Include="CSnakes.Runtime" Version="1.1.0" />
       <PackageReference Include="CsvHelper" Version="33.1.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.7" />
       <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.300.38" />
-  </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="ml\training.py" />
-      <None Remove="ml\recommendation_system.py" />
-      <None Update="ml\data\content_bygenre_df.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\content_item_train.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\content_item_train_header.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\content_item_vecs.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\content_movie_list.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\content_user_train.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\content_user_train_header.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\content_y_train.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\requirements.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\links.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\movies.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\ratings.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\tags.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\additional_movie_attributes.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\data\top200_movies.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ml\tmdb.py">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
     </ItemGroup>
 
+
     <ItemGroup>
-      <AdditionalFiles Include="Components\Pages\Layout\MainLayout.razor" />
+      <AdditionalFiles Include="Components\Pages\Layout\ErrorLayout.razor" />
       <None Remove="Python\recommendation_system.py" />
       <AdditionalFiles Include="Python\recommendation_system.py" />
     </ItemGroup>
@@ -86,7 +33,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\UI.Client\UI.Client.csproj" />
       <ProjectReference Include="..\UI.Shared\UI.Shared.csproj" />
     </ItemGroup>
 
@@ -97,8 +43,8 @@
 
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\lib\MoviesSlideshow\dist\component.bundle.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\MoviesSlideshow\dist\component.bundle.js.map" />
+      <!-- <_ContentIncludedByDefault Remove="wwwroot\lib\MoviesSlideshow\dist\component.bundle.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\lib\MoviesSlideshow\dist\component.bundle.js.map" /> -->
     </ItemGroup>
 
     <Target Name="EchoPlatformAndConfiguration" BeforeTargets="BeforeBuild">

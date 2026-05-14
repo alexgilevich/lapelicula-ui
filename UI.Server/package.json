@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-dev": "webpack --mode=development",
-    "build": "webpack --mode=production"
+    "build": "webpack --mode=production",
+    "build-prod": "webpack --mode=production"
   },
   "repository": {
     "type": "git",
@@ -41,6 +42,7 @@
     "js-cookie": "^3.0.5",
     "motion": "^12.23.3",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.2"
   }
 }

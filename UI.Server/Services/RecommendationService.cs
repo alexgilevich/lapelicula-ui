@@ -8,26 +8,26 @@ namespace LaPelicula.UI.Server.Services;
 
 public interface IRecommendationService
 {
-    Task<IEnumerable<Recommendation>> RecommendAsync(string encodedPreferencesStr, int limit = 25);
+    Task<IEnumerable<Recommendation>> RecommendAsync(UserPreferences userPreferences, int limit = 25);
 }
 
 public class RecommendationService(
     IMovieRepository _movieRepository, 
-    IUserPreferencesEncoder _userPreferencesEncoder, 
+    
     ITensorFlowModelService _tensorFlowModelService, 
     IMemoryCache _cache, 
     IOptions<RecommendationsConfig> _recommendationsConfig
 ) : IRecommendationService
 {
-    public async Task<IEnumerable<Recommendation>> RecommendAsync(string encodedPreferencesStr, int limit = 25)
+    public async Task<IEnumerable<Recommendation>> RecommendAsync(UserPreferences userPreferences, int limit = 25)
     {
-        var preferences = _userPreferencesEncoder.Decode(encodedPreferencesStr);
         var (prefilteredMovies, movieIdToMovie) = await GetPrefilteredMoviesAsync();
-        var rawRecommendations = await _cache.GetOrCreateAsync(encodedPreferencesStr, async entry =>
+        var rawRecommendations = await _cache.GetOrCreateAsync(userPreferences.ToString()!, async entry =>
         {
             if (_recommendationsConfig.Value.CacheDurationSeconds > 0)
                 entry.SetAbsoluteExpiration(TimeSpan.FromSeconds(_recommendationsConfig.Value.CacheDurationSeconds)); // raw recommendations do not change
-            return await _tensorFlowModelService.RecommendAsync(preferences, prefilteredMovies);
+                
+            return await _tensorFlowModelService.RecommendAsync(userPreferences, prefilteredMovies);
         });
         
         var result = new List<Recommendation>(capacity: rawRecommendations!.Count);

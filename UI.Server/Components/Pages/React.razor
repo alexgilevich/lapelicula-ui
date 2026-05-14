@@ -1,0 +1,15 @@
+﻿@page "/{*pageRoute}"
+
+<PageTitle>Home</PageTitle>
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["dist/app-react.css"]"/>
+</HeadContent>
+
+<div id="app"></div>
+
+<script src="@Assets["dist/app-react.bundle.js"]"></script>
+
+@code {
+    [Parameter]
+    public string? PageRoute { get; set; }
+}
