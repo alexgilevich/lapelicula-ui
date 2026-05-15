@@ -17,7 +17,7 @@ class GlideWrapper {
             perView: 3,
             focusAt: 'center',
             gap: 24,
-            //autoplay: 5000,
+            autoplay: 5000,
             breakpoints: {
                 4000: { perView: 15 },
                 2500: { perView: 11 },
@@ -101,14 +101,14 @@ class GlideWrapper {
 export default function MovieSlideshow({ props, ref }) {
     const [recommendations, setRecommendations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [modelNotTrained, setModelNotTrained] = useState(false);
+    const [modelNotLoaded, setModelNotLoaded] = useState(false);
     const glideRef = useRef(null);
     const id = useId();
 
     const fetchRecommendations = useCallback(async () => {
         try {
             setIsLoading(true);
-            setModelNotTrained(false);
+            setModelNotLoaded(false);
             const response = await fetch('/api/recommendations');
 
             if (response.status === 204) {
@@ -117,7 +117,7 @@ export default function MovieSlideshow({ props, ref }) {
             }
 
             if (response.status === 503) {
-                setModelNotTrained(true);
+                setModelNotLoaded(true);
                 return;
             }
 
@@ -159,8 +159,8 @@ export default function MovieSlideshow({ props, ref }) {
     return (
         <div className="recommendations-container">
             <div className={`glide ${isLoading ? 'glide_loading' : ''}`} id={"glideContainer" + id} ref={glideRef}>
-                {modelNotTrained ? (
-                    <p className="glide_model-not-trained">Model is not trained yet. Try again later...</p>
+                {modelNotLoaded ? (
+                    <p className="glide_model-not-trained">Model has not been loaded yet. Please try again later...</p>
                 ) : (
                     <div>
                         <div className="gradient-overlay overlay-left"></div>
@@ -195,6 +195,9 @@ export default function MovieSlideshow({ props, ref }) {
                         </div>
                     </div>
                 )}
+                <div class="glide__loading-overlay">
+                    <span class="glide__loader"></span>
+                </div>
             </div>
         </div>
     );

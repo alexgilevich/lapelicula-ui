@@ -7,7 +7,7 @@ import './MovieCard.css';
 
 const fadeUpVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, x: 50 },
+    visible: { opacity: 1, x: 0 },
 };
 
 const posterVariants = {
@@ -48,15 +48,6 @@ export default function MovieCard() {
     return (
         <div className="movie-card">
             <motion.div
-                className="movie-card__poster"
-                initial="hidden"
-                animate="visible"
-                variants={posterVariants}
-            >
-                <img src={movie.posterUri} alt={movie.title} />
-            </motion.div>
-
-            <motion.div
                 className="movie-card__content"
                 initial="hidden"
                 animate="visible"
@@ -67,7 +58,7 @@ export default function MovieCard() {
                     <span className="movie-card__year"> ({movie.year})</span>
                 </h1>
 
-                <p className="movie-card__tagline">"{movie.tagline}"</p>
+                { movie.tagline ? <p className="movie-card__tagline">"{movie.tagline}"</p> : <></> }
 
                 <a
                     className="movie-card__tmdb-link"
@@ -93,6 +84,9 @@ export default function MovieCard() {
                             {genres.map((genre, i) => (
                                 <span key={i} className="movie-card__genre-tag">{genre}</span>
                             ))}
+                            {movie.adult && (
+                                <span className="movie-card__adult-tag">For Adults</span>
+                            )}
                         </div>
                     )}
 
@@ -108,11 +102,31 @@ export default function MovieCard() {
                             </span>
                         )}
                     </div>
+
+                    {(movie.budget > 0 || movie.revenue > 0) && (
+                        <div className="movie-card__financials">
+                            {movie.budget > 0 && (
+                                <span>Budget: ${movie.budget.toLocaleString('en-US')}</span>
+                            )}
+                            {movie.revenue > 0 && (
+                                <span>Revenue: ${movie.revenue.toLocaleString('en-US')}</span>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {movie.description && (
                     <p className="movie-card__description">{movie.description}</p>
                 )}
+            </motion.div>
+
+            <motion.div
+                className="movie-card__poster"
+                initial="hidden"
+                animate="visible"
+                variants={posterVariants}
+            >
+                <img src={movie.posterUri} alt={movie.title} />
             </motion.div>
         </div>
     );
