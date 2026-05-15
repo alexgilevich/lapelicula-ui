@@ -3,59 +3,59 @@ namespace UI.Shared;
 
 public record Movie
 {
-    public Movie() { }
-    
-    public Movie(long Id, long TmdbId, string Title, string Description, long Year, string PosterUri, string[] Genres, double Budget, string[] OriginCountries, double RatingAverage)
-    {
-        this.Id = Id;
-        this.TmdbId = TmdbId;
-        this.Title = Title;
-        this.Description = Description;
-        this.Year = Year;
-        this.PosterUri = PosterUri;
-        this.Budget = Budget;
-        this.OriginCountries = OriginCountries;
-        this.RatingAverage = RatingAverage;
-        RawGenres = Genres;
-        GenreVector = GetGenreVector(Genres);
-    }
+    private static byte[] DefaultGenreVector = new byte[Genre.Count];
 
     #region Non-genre movie properties
-    
-    public long Id { get; init; }
-    public long TmdbId { get; init; } 
-    public string Title { get; init; } 
-    public string Description { get; init; }
-    public long Year { get; init; }
-    public string PosterUri { get; init; }
-    public double Budget { get; init; }
-    public string[] OriginCountries { get; init; }
-    public double RatingAverage { get; init; }
-    
+
+    public required long Id { get; init; }
+    public required long TmdbId { get; init; }
+    public required long ImdbId { get; init; }
+    public required string Title { get; init; }
+    public required string Description { get; init; }
+    public required string Tagline { get; init; }
+    public required long Year { get; init; }
+    public required string PosterUri { get; init; }
+    public required decimal Budget { get; init; }
+    public required decimal Revenue { get; init; }
+    public required string[] OriginCountries { get; init; }
+    public required string[] ProductionCountries { get; init; }
+    public required double RatingAverage { get; init; }
+    public required bool Adult { get; init; }
+
+
     #endregion
 
     #region Genre-related movie properties
 
-    public string[] RawGenres { get; init; }
-    public byte[] GenreVector { get; init; }
-    public bool Action => GenreVector[Genre.Action.Position] > 0;
-    public bool Adventure => GenreVector[Genre.Adventure.Position] > 0;
-    public bool Animation => GenreVector[Genre.Animation.Position] > 0;
-    public bool Comedy => GenreVector[Genre.Comedy.Position] > 0;
-    public bool Crime => GenreVector[Genre.Crime.Position] > 0;
-    public bool Documentary => GenreVector[Genre.Documentary.Position] > 0;
-    public bool Drama => GenreVector[Genre.Drama.Position] > 0;
-    public bool Fantasy => GenreVector[Genre.Fantasy.Position] > 0;
-    public bool FilmNoir => GenreVector[Genre.FilmNoir.Position] > 0;
-    public bool Horror => GenreVector[Genre.Horror.Position] > 0;
-    public bool Kids => GenreVector[Genre.Kids.Position] > 0;
-    public bool Musical => GenreVector[Genre.Musical.Position] > 0;
-    public bool Mystery => GenreVector[Genre.Mystery.Position] > 0;
-    public bool Romance => GenreVector[Genre.Romance.Position] > 0;
-    public bool SciFi => GenreVector[Genre.SciFi.Position] > 0;
-    public bool Thriller => GenreVector[Genre.Thriller.Position] > 0;
-    public bool War => GenreVector[Genre.War.Position] > 0;
-    public bool Western => GenreVector[Genre.Western.Position] > 0;
+    public required string[] RawGenres 
+    { 
+        get; 
+        init 
+        {
+            field = value;
+            _genreVector = GetGenreVector(value);
+        } 
+    }
+    private byte[] _genreVector = DefaultGenreVector;
+    public byte[] GenreVector => _genreVector;
+    public bool Action => _genreVector[Genre.Action.Position] > 0;
+    public bool Adventure => _genreVector[Genre.Adventure.Position] > 0;
+    public bool Animation => _genreVector[Genre.Animation.Position] > 0;
+    public bool Comedy => _genreVector[Genre.Comedy.Position] > 0;
+    public bool Crime => _genreVector[Genre.Crime.Position] > 0;
+    public bool Documentary => _genreVector[Genre.Documentary.Position] > 0;
+    public bool Drama => _genreVector[Genre.Drama.Position] > 0;
+    public bool Fantasy => _genreVector[Genre.Fantasy.Position] > 0;
+    public bool FilmNoir => _genreVector[Genre.FilmNoir.Position] > 0;
+    public bool Horror => _genreVector[Genre.Horror.Position] > 0;
+    public bool Kids => _genreVector[Genre.Kids.Position] > 0;
+    public bool Musical => _genreVector[Genre.Musical.Position] > 0;
+    public bool Mystery => _genreVector[Genre.Mystery.Position] > 0;
+    public bool Romance => _genreVector[Genre.Romance.Position] > 0;
+    public bool SciFi => _genreVector[Genre.SciFi.Position] > 0;
+    public bool Thriller => _genreVector[Genre.Thriller.Position] > 0;
+    public bool War => _genreVector[Genre.War.Position] > 0;
+    public bool Western => _genreVector[Genre.Western.Position] > 0;
     
     #endregion
     

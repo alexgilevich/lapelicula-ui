@@ -1,3 +1,4 @@
+using CommunityToolkit.HighPerformance;
 using LaPelicula.UI.Server.Common;
 using LaPelicula.UI.Shared;
 using Microsoft.Extensions.Caching.Memory;
@@ -37,9 +38,9 @@ public class RecommendationService(
             result.Add(new Recommendation(movie, Math.Floor(rating / 0.5) * 0.5));
         }
 
-        var recommendationArr = result.ToArray();
+        var recommendationArr = result.AsSpan();
         Random.Shared.Shuffle(recommendationArr);
-        return recommendationArr;
+        return recommendationArr.Slice(0, limit).ToArray();
     }
 
 

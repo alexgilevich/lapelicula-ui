@@ -1,10 +1,12 @@
 import React from 'react';
 import './MainLayout.css';
+import PageTitle from '../../components/pageTitle';
 import { NavLink, Outlet } from 'react-router';
 
 function MainLayout({ children }) {
     return (
         <>
+            <PageTitle />
             <header>
                 <NavLink to="/" className="logo">
                     La Pelicula

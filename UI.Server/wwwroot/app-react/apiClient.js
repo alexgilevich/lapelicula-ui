@@ -15,3 +15,10 @@ export async function saveGenrePreferences(preferences) {
     });
     if (!response.ok) throw new Error('Failed to save genre preferences');
 }
+
+export async function getMovieById(movieId) {
+    const response = await fetch(`/api/movie/${movieId}`);
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error('Failed to fetch movie');
+    return response.json();
+}

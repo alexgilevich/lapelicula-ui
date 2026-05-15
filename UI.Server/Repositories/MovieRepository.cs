@@ -1,3 +1,4 @@
+using System.Globalization;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
@@ -70,37 +71,56 @@ public class DynamoDbMovieRepository : IMovieRepository
         
         long id = SafeLong(item, "movie_id");
         long tmdbId = SafeLong(item, "tmdb_id");
+        long imdbId = SafeLong(item, "imdb_id");
         string title = SafeString(item, "title");
         string description = SafeString(item, "description");
+        string tagline = SafeString(item, "tagline");
         long year = SafeLong(item, "year");
-        double ratingAverage = SafeDouble(item, "rating_avg");
+        double ratingAverage = SafeDouble(item, "vote_average");
         string posterUri = SafeString(item, "poster_uri");
-        double budget = SafeDouble(item, "budget");
+        decimal budget = SafeDecimal(item, "decimal");
+        decimal revenue = SafeDecimal(item, "revenue");
         string[] originCountries = SafeStringList(item, "origin_countries");
+        string[] productionCountries = SafeStringList(item, "production_countries");
         string[] genres = SafeStringList(item, "genres");
+        bool adult = SafeBool(item, "adult");
 
-        return new Movie(
-            id,
-            tmdbId,
-            title,
-            description,
-            year,
-            posterUri,
-            genres,
-            budget,
-            originCountries,
-            ratingAverage
-        );
+        var movie = new Movie
+        {
+            Id = id,
+            TmdbId = tmdbId,
+            ImdbId = imdbId,
+            Title = title,
+            Description = description,
+            Tagline = tagline,
+            Year = year,
+            RatingAverage = double.Round(ratingAverage, 1),
+            PosterUri = posterUri,
+            Budget = budget,
+            Revenue = revenue,
+            OriginCountries = originCountries,
+            ProductionCountries = productionCountries,
+            RawGenres = genres,
+            Adult = adult
+
+        };
+        return movie;
     }
 
     private static string SafeString(Dictionary<string, AttributeValue> item, string key)
         => item.TryGetValue(key, out var a) && a.S != null ? a.S : string.Empty;
 
     private static long SafeLong(Dictionary<string, AttributeValue> item, string key)
-        => item.TryGetValue(key, out var a) && a.N != null && long.TryParse(a.N, out var v) ? v : 0L;
+        => item.TryGetValue(key, out var a) && a.N != null && long.TryParse(a.N, CultureInfo.InvariantCulture, out var v) ? v : 0L;
 
     private static double SafeDouble(Dictionary<string, AttributeValue> item, string key)
-        => item.TryGetValue(key, out var a) && a.N != null && double.TryParse(a.N, out var v) ? v : 0d;
+        => item.TryGetValue(key, out var a) && a.N != null && double.TryParse(a.N, CultureInfo.InvariantCulture, out var v) ? v : 0d;
+
+    private static decimal SafeDecimal(Dictionary<string, AttributeValue> item, string key)
+        => item.TryGetValue(key, out var a) && a.N != null && decimal.TryParse(a.N, CultureInfo.InvariantCulture, out var v) ? v : new decimal(0);
+
+    private static bool SafeBool(Dictionary<string, AttributeValue> item, string key)
+        => item.TryGetValue(key, out var a) && a.N != null && bool.TryParse(a.N, out var v) ? v : false;
 
     private static string[] SafeStringList(Dictionary<string, AttributeValue> item, string key)
     {
