@@ -21,7 +21,14 @@ public class UserPreferencesEncoder(ILogger<UserPreferencesEncoder> logger) : IU
     public string Encode(GenrePreferences preferences)
     {
         // serialize preferences to JSON
-        string preferencesStr = JsonSerializer.Serialize(preferences);
+        string preferencesStr = JsonSerializer.Serialize(preferences, new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+        });
+
+        // if there are no values we return an empty string instead
+        if (!preferencesStr.Contains("\"")) 
+            return string.Empty;
 
         // encode the string to UTF8 bytes
         byte[] utf8Bytes = Encoding.UTF8.GetBytes(preferencesStr);

@@ -26,15 +26,20 @@ public class UserController(IUserPreferencesEncoder userPreferencesEncoder, IHtt
     {
         // for now we will just store the preferences in a cookie, but in the future we can associate it with a user profile in the database
         var encoded = userPreferencesEncoder.Encode(preferences);
-        
-        Response.Cookies.Append(UserConstants.PreferencesCookieName, encoded, new CookieOptions
+        if (string.IsNullOrEmpty(encoded))
         {
-            SameSite = SameSiteMode.Strict,
-            HttpOnly = true,
-            Secure = true,
-            IsEssential = true,
-        });
-
+            Response.Cookies.Delete(UserConstants.PreferencesCookieName);
+        }
+        else
+        {
+            Response.Cookies.Append(UserConstants.PreferencesCookieName, encoded, new CookieOptions
+            {
+                SameSite = SameSiteMode.Strict,
+                HttpOnly = true,
+                Secure = true,
+                IsEssential = true,
+            });
+        }
         return Ok();
     }
 }

@@ -20,8 +20,13 @@ export default function UserPreferencesOverlay({shown, onSaved}) {
     }, []);
 
     const resetPreferences = useCallback(async () => {
-        setPreferences({});
-    }, []);
+        var resetPreferences = Object.assign({}, preferences);
+        for (let key of Object.keys(resetPreferences || {}))
+            resetPreferences[key] = 0;
+        setPreferences(resetPreferences);
+        setIsReset(true);
+        savePreferences(resetPreferences);
+    }, [preferences]);
 
     const updateGenrePreference = useCallback(async (genre_key, newValue) => {
         setPreferences(prev =>  ({ ...prev, [genre_key]: newValue ?? 0 }));
@@ -29,14 +34,14 @@ export default function UserPreferencesOverlay({shown, onSaved}) {
     }, []);
 
 
-    const savePreferences = useCallback(async () => {
+    const savePreferences = useCallback(async (preferences) => {
         try {
             await saveGenrePreferences(preferences);
             onSaved?.();
         } catch (ex) {
             console.error('Failed to save preferences', ex);
         }
-    }, [preferences]);
+    }, [onSaved]);
     
     return (
         <div className={`preferences-overlay ${!shown ? 'hidden' : ''}`}>
@@ -50,7 +55,7 @@ export default function UserPreferencesOverlay({shown, onSaved}) {
                 <div className="preferences-overlay__actions">
                     <button className="button button_secondary" style={{ marginRight: '2vh' }} onClick={resetPreferences}>Reset</button>
                     {!isReset && (
-                        <button className="button" onClick={savePreferences}>Save &amp; continue</button>
+                        <button className="button" onClick={() => savePreferences(preferences)}>Save &amp; continue</button>
                     )}
                 </div>
             </div>

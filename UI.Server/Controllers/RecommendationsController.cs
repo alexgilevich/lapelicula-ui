@@ -40,7 +40,7 @@ public class RecommendationsController(
                 War = genrePreferences.War,
                 Western = genrePreferences.Western
             };
-            return Ok(await _recommendationService.RecommendAsync(userPreferences, 25));
+            return Ok(await _recommendationService.RecommendAsync(userPreferences, 100));
         }
         catch (Exception ex)
         {

@@ -21,6 +21,16 @@ export default function Home() {
         movieSlideshowRef.current?.refresh();
     };
 
+    useEffect(() => {
+        const noCookieFoundHandler = () => {
+            setShowMovies(false);
+        };
+        window.addEventListener(EVENTS.NO_COOKIE_FOUND, noCookieFoundHandler);
+        return () => {
+            window.removeEventListener(EVENTS.NO_COOKIE_FOUND, noCookieFoundHandler);
+        };
+    }, []);
+
     return (
         <>
             <div className={`content-wrapper ${showMovies ? '' : 'hidden'}`}>

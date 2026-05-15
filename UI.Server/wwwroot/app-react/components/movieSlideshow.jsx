@@ -98,7 +98,7 @@ class GlideWrapper {
 
 }
 
-export default function MovieSlideshow({ props, ref }) {
+export default function MovieSlideshow({ ref }) {
     const [recommendations, setRecommendations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [modelNotLoaded, setModelNotLoaded] = useState(false);
