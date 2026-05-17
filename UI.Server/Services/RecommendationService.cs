@@ -23,14 +23,14 @@ public class RecommendationService(
     public async Task<IEnumerable<Recommendation>> RecommendAsync(UserPreferences userPreferences, int limit = 25)
     {
         var (prefilteredMovies, movieIdToMovie) = await GetPrefilteredMoviesAsync();
-        var rawRecommendations = await _cache.GetOrCreateAsync(userPreferences.ToString()!, async entry =>
+        var rawRecommendations = await _cache.GetOrCreateAsync($"{userPreferences.ToString()}_limit{limit}", async entry =>
         {
             if (_recommendationsConfig.Value.CacheDurationSeconds > 0)
                 entry.SetAbsoluteExpiration(TimeSpan.FromSeconds(_recommendationsConfig.Value.CacheDurationSeconds)); // raw recommendations do not change
                 
-            return await _tensorFlowModelService.RecommendAsync(userPreferences, prefilteredMovies);
+            return (await _tensorFlowModelService.RecommendAsync(userPreferences, prefilteredMovies)).Take(limit).ToList();
         });
-        
+            
         var result = new List<Recommendation>(capacity: rawRecommendations!.Count);
         foreach ((long movieId, double rating) in rawRecommendations)
         {
@@ -40,7 +40,7 @@ public class RecommendationService(
 
         var recommendationArr = result.AsSpan();
         Random.Shared.Shuffle(recommendationArr);
-        return recommendationArr.Slice(0, limit).ToArray();
+        return recommendationArr.ToArray();
     }
 
 

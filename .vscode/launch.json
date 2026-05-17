@@ -8,6 +8,7 @@
         "name": "C#: UI.Server Debug",
         "type": "dotnet",
         "request": "launch",
+        "preLaunchTask": "dotnet: build",
         "projectPath": "${workspaceFolder}/UI.Server/UI.Server.csproj"
     }
     ]

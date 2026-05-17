@@ -38,9 +38,10 @@ public class RecommendationsController(
                 Scifi = genrePreferences.Scifi,
                 Thriller = genrePreferences.Thriller,
                 War = genrePreferences.War,
-                Western = genrePreferences.Western
+                Western = genrePreferences.Western 
             };
-            return Ok(await _recommendationService.RecommendAsync(userPreferences, 100));
+            var recommendations = await _recommendationService.RecommendAsync(userPreferences, 200);
+            return Ok(recommendations);
         }
         catch (Exception ex)
         {

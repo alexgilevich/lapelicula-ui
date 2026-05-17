@@ -5,24 +5,24 @@ public record Genre(string Name, byte Position)
     public const int Count = 18;
     public static class Names
     {
-        public const string Action = "action";
-        public const string Adventure = "adventure";
-        public const string Animation = "animation";
-        public const string Comedy = "comedy";
-        public const string Crime = "crime";
-        public const string Documentary = "documentary";
-        public const string Drama = "drama";
-        public const string Fantasy = "fantasy";
-        public const string FilmNoir = "film_noir";
-        public const string Horror = "horror";
-        public const string Kids = "kids";
-        public const string Musical = "musical";
-        public const string Mystery = "mystery";
-        public const string Romance = "romance";
-        public const string SciFi = "sci_fi";
-        public const string Thriller = "thriller";
-        public const string War = "war";
-        public const string Western = "western";
+        public const string Action = "Action";
+        public const string Adventure = "Adventure";
+        public const string Animation = "Animation";
+        public const string Comedy = "Comedy";
+        public const string Crime = "Crime";
+        public const string Documentary = "Documentary";
+        public const string Drama = "Drama";
+        public const string Fantasy = "Fantasy";
+        public const string FilmNoir = "Film-Noir";
+        public const string Horror = "Horror";
+        public const string Kids = "Kids";
+        public const string Musical = "Musical";
+        public const string Mystery = "Mystery";
+        public const string Romance = "Romance";
+        public const string SciFi = "Sci-Fi";
+        public const string Thriller = "Thriller";
+        public const string War = "War";
+        public const string Western = "Western";
     }
 
     public static readonly Genre Action = new (Names.Action, 0);

@@ -1,5 +1,4 @@
 import os
-
 from mlflow.pyfunc import PyFuncModel
 
 from features import UserPreferences
@@ -11,14 +10,31 @@ model: PyFuncModel = None
 
 import mlflow
 import numpy as np
+import sys
+import logging
+
+np.set_printoptions(linewidth=1000, edgeitems=20, precision=4)
+
+
+def get_logger(name: str) -> logging.Logger:
+    logger = logging.getLogger(name)
+    handler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+    return logger
+
+logger = get_logger(__name__)
 
 def load_model():
     global model
     model_save_bucket = os.environ.get("MODEL_SAVE_S3_BUCKET")
     model_save_prefix = os.environ.get("MODEL_SAVE_S3_PREFIX")
     model_name = os.environ.get("MLFLOW_MODEL_NAME")
+    logger.info("Initializing model...")
     model = mlflow.pyfunc.load_model(f"s3://{os.path.join(model_save_bucket, model_save_prefix, model_name)}")
-
+    logger.info("Model initialized successfully")
 
 def recommend(preferences: dict[str, float], movie_vectors: bytes) -> list[tuple[int, float]]:
     """
@@ -43,13 +59,14 @@ def recommend(preferences: dict[str, float], movie_vectors: bytes) -> list[tuple
     assert preferences, "`preferences` argument is required to be provided" 
     
     if __debug__:
-        print("Predicting for preferences: ", preferences)
+        logger.debug("Predicting for preferences: ", preferences)
 
     preferences = UserPreferences(**preferences).to_dict()
     if __debug__:
-        print("All preferences: ", preferences)
+        logger.debug("All preferences: %s", preferences)
     
     movie_vectors_np = np.frombuffer(movie_vectors, dtype=np.int32).reshape(-1, len(preferences.items()) + 1)
+
     res = model.predict([
         {
             "user_preferences": preferences,
@@ -69,74 +86,65 @@ def is_loaded() -> bool:
 load_model()
 
 if __name__ == '__main__':
-    movies = np.array([[1,0,1,1,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0],
-                       [2,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],
-                       [3,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0],
-                       [4,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0],
-                       [5,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [6,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0],
-                       [7,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0],
-                       [8,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
-                       [9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [10,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
-                       [11,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0],
-                       [12,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0],
-                       [13,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
-                       [14,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
-                       [15,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0],
-                       [16,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
-                       [17,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0],
-                       [18,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [19,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [20,1,0,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,0]], dtype=np.int32)
+    import pandas as pd
+    DEFAULT_DATA_PATH = "./test_data"
+    schema = {"movie_id": "int32", "title": "object", "genres": "object", "year": "int32", "rating_count": "float64", "rating_avg": "float64", "genre_partition0": "int32", "genre_partition1": "int32", "Action": "int32", "Adventure": "int32", "Animation": "int32", "Comedy": "int32", "Crime": "int32", "Documentary": "int32", "Drama": "int32", "Fantasy": "int32", "Film-Noir": "int32", "Horror": "int32", "Kids": "int32", "Musical": "int32", "Mystery": "int32", "Romance": "int32", "Sci-Fi": "int32", "Thriller": "int32", "War": "int32", "Western": "int32"}
+    all_movies_pdf = pd.read_csv(os.path.join(DEFAULT_DATA_PATH, "all_movies.csv"), dtype=schema)
+    movies = all_movies_pdf.drop(columns=['row_id', 'title', 'genres', 'year', 'rating_count', 'rating_avg', 'genre_partition0', 'genre_partition1'], errors="ignore").to_numpy()
+
     requests = [{
         "user_preferences": { "drama": 5, "action": 5 },
         "movies": movies
     }]
 
     
-    def recommend_internal(movie_ids: list[int] = None, **preferences: float) -> list[tuple[str, float]]:
+    def recommend_internal(**preferences: float) -> list[tuple[str, float]]:
         movies_bytes = memoryview(movies).tobytes()
-        return recommend(preferences, movies_bytes)
+        return recommend(preferences, movies_bytes)[:50]
     
-    print('\n\nfirst user (should be more action and adventure movies):')
+    logger.debug('\n\nfirst user (should show kids and adventure movies):')
+    predictions = recommend_internal(kids = 5, animation = 5)
+    for pred in predictions:
+        logger.debug(pred)
+
+    logger.debug('\n\nsecond user (should show action and adventure movies):')
     predictions = recommend_internal(action = 5, adventure = 3.5, mystery = 4, horror = 1, sci_fi = 4, western = 3, drama = 3, animation = 0.5 )
     for pred in predictions:
-        print(pred)
+        logger.debug(pred)
 
-    print('\n\nsecond user (should be more kids-oriented movies and cartoons):')
+    logger.debug('\n\third user (should show kids-oriented movies and cartoons):')
     predictions = recommend_internal(kids = 5, animation = 5, adventure = 4.5, comedy = 4.5, mystery = 2, crime = 1, horror = 0.5, sci_fi = 4)
     for pred in predictions:
-        print(pred)
+        logger.debug(pred)
 
-    print('\n\nthird user (should be more romance-oriented movies):')
+    logger.debug('\n\nfourth user (should be more romance-oriented movies):')
     predictions = recommend_internal( comedy = 4.5, romance = 5, mystery = 2, crime = 0.5, horror = 0.5, sci_fi = 1.5)
     for pred in predictions:
-        print(pred)
+        logger.debug(pred)
 
-    print('\n\nfourth user (should be only kids-oriented movies and cartoons):')
+    logger.debug('\n\nfifth user (should be only kids-oriented movies and cartoons):')
     predictions = recommend_internal(kids = 5, animation = 5, adventure = 4.5)
     for pred in predictions:
-        print(pred)
+        logger.debug(pred)
 
 
-    print('\n\nfifth user (should be more action and sci-fi movies):')
+    logger.debug('\n\nsixth user (should be more action and sci-fi movies):')
     predictions = recommend_internal(action = 5,  sci_fi = 4.5 )
     for pred in predictions:
-        print(pred)
+        logger.debug(pred)
 
-    print('\n\nsixth user (should be more comedy and romance movies):')
+    logger.debug('\n\nseventh user (should be more comedy and romance movies):')
     predictions = recommend_internal(comedy = 4.5,  romance = 4.5 )
     for pred in predictions:
-        print(pred)
+        logger.debug(pred)
 
-    print('\n\nseventh user (should be more war-related movies):')
+    logger.debug('\n\neighth user (should be more war-related movies):')
     predictions = recommend_internal(war=5)
     for pred in predictions:
-        print(pred)
+        logger.debug(pred)
 
-    print('\n\neighth user (should be more western movies):')
+    logger.debug('\n\nninth user (should be more western movies):')
     predictions = recommend_internal(western=5)
     for pred in predictions:
-        print(pred)
+        logger.debug(pred)
     
