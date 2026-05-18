@@ -33,6 +33,9 @@ def load_model():
     model_save_prefix = os.environ.get("MODEL_SAVE_S3_PREFIX")
     model_name = os.environ.get("MLFLOW_MODEL_NAME")
     logger.info("Initializing model...")
+    mlflow.set_tracking_uri("sqlite:///:memory:")
+    mlflow.set_registry_uri("")
+    mlflow.tracing.disable()
     model = mlflow.pyfunc.load_model(f"s3://{os.path.join(model_save_bucket, model_save_prefix, model_name)}")
     logger.info("Model initialized successfully")
 
@@ -83,9 +86,9 @@ def is_loaded() -> bool:
     """
     return bool(model)
 
-load_model()
 
 if __name__ == '__main__':
+    load_model()
     import pandas as pd
     DEFAULT_DATA_PATH = "./test_data"
     schema = {"movie_id": "int32", "title": "object", "genres": "object", "year": "int32", "rating_count": "float64", "rating_avg": "float64", "genre_partition0": "int32", "genre_partition1": "int32", "Action": "int32", "Adventure": "int32", "Animation": "int32", "Comedy": "int32", "Crime": "int32", "Documentary": "int32", "Drama": "int32", "Fantasy": "int32", "Film-Noir": "int32", "Horror": "int32", "Kids": "int32", "Musical": "int32", "Mystery": "int32", "Romance": "int32", "Sci-Fi": "int32", "Thriller": "int32", "War": "int32", "Western": "int32"}

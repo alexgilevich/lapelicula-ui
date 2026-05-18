@@ -25,6 +25,9 @@
       <AdditionalFiles Include="Python\features.py" SourceItemType="Python">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </AdditionalFiles>
+      <AdditionalFiles Include="Python\requirements.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </AdditionalFiles>
     </ItemGroup>
 
     <ItemGroup>

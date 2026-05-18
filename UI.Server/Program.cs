@@ -17,12 +17,26 @@ builder.Services.AddRazorComponents()
 
 // Add Python services to the container.
 var home = Path.Join(Environment.CurrentDirectory, "Python");
-builder.Services
+var pythonBuilder =builder.Services
     .WithPython()
     .WithHome(home)
-    .FromRedistributable(RedistributablePythonVersion.Python3_13)
-    .WithVirtualEnvironment(Path.Join(home, ".venv-net"))
-    .WithPipInstaller(Path.Join(home, "requirements.txt"));
+    .WithVirtualEnvironment(Path.Join(home, ".venv-net"));
+
+if (builder.Environment.IsDevelopment())
+{
+    pythonBuilder
+        .FromRedistributable(RedistributablePythonVersion.Python3_13)
+        .WithPipInstaller(Path.Join(home, "requirements.txt"));
+}
+else
+{
+    var dottedVersion = "3.13.2";
+    var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.DoNotVerify);
+    var installedPath = Path.Join(appDataPath, "CSnakes", $"python{dottedVersion}", "python", "install");
+    pythonBuilder
+        .FromFolder(installedPath, dottedVersion);
+}
+
 
 // Add services to the container.
 builder.Services
