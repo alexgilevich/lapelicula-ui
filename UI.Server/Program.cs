@@ -44,7 +44,6 @@ builder.Services
     .AddMemoryCache()
     .AddSingleton<IUserPreferencesEncoder, UserPreferencesEncoder>()
     .AddSingleton<ITensorFlowModelService, TensorFlowModelService>()
-    .AddSingleton<IMovieRepository, DynamoDbMovieRepository>()
     .AddSingleton<IMovieService, MovieService>()
     .AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>()
     .AddSingleton<IRecommendationService, RecommendationService>()
@@ -75,6 +74,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 builder.Services.Configure<RecommendationsConfig>(builder.Configuration.GetSection("Recommendations"));
+builder.Services.Configure<RepositoryCacheConfig>(builder.Configuration.GetSection("RepositoryCache"));
+
+builder.Services
+    .AddSingleton<INonCached<IMovieRepository>, DynamoDbMovieRepository>()
+    .AddSingleton<IMovieRepository, CachedDynamoDbMovieRepository>();
 
 var app = builder.Build();
 

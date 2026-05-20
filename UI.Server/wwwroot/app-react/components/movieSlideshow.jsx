@@ -195,8 +195,8 @@ export default function MovieSlideshow({ ref }) {
                         </div>
                     </div>
                 )}
-                <div class="glide__loading-overlay">
-                    <span class="glide__loader"></span>
+                <div className="glide__loading-overlay">
+                    <span className="glide__loader"></span>
                 </div>
             </div>
         </div>

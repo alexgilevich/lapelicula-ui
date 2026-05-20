@@ -2,6 +2,7 @@ using System.Globalization;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using LaPelicula.UI.Server.Common;
 using UI.Shared;
 
 namespace LaPelicula.UI.Server.Services;
@@ -18,7 +19,7 @@ public interface IMovieRepository
 ///   MOVIES_TABLE – required, name of DynamoDB table
 ///   AWS_REGION   – optional, region for the client (falls back to SDK defaults)
 /// </summary>
-public class DynamoDbMovieRepository : IMovieRepository
+public class DynamoDbMovieRepository : IMovieRepository, INonCached<IMovieRepository>
 {
     private readonly IAmazonDynamoDB _dynamoDb;
 
@@ -26,6 +27,8 @@ public class DynamoDbMovieRepository : IMovieRepository
     {
         _dynamoDb = dynamoDb;
     }
+
+    public IMovieRepository Instance => this;
 
     public async Task<Movie> GetMovieByIdAsync(long movieId)
     {

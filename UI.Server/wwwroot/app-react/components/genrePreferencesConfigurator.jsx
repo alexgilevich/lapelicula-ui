@@ -68,7 +68,7 @@ export default function GenrePreferencesConfigurator({ value, onChange }) {
             <motion.div initial="hidden" animate="visible" exit="hidden" variants={fadeUpVariants} transition={{ duration: 0.8, ease: "easeOut" }}>
                 <CacheProvider value={cache}>
                     <ThemeProvider theme={darkTheme}>
-                        <Grid container spacing={{ xs: 1, md: 2 }} columns={{ xs: 2, md: 4, xl: 8 }}>
+                        <Grid container columnSpacing={{ xs: 2, md: 4, lg: 6 }} rowSpacing={{ xs: 3 }} columns={{ xs: 4, md: 6 }}>
                             {Object.keys(value).map((genre_key, index) => (
                                 <Grid key={index} size={{ xs: 2, sm: 2, md: 2 }}>
                                     <Box component="section">

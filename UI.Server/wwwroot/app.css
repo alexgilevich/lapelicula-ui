@@ -362,14 +362,10 @@ nav a {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow-y: auto;
     
 }
 
-@media (max-width: 1000px) {
-    .preferences-overlay {
-        overflow-y: auto;
-    }   
-}
 
 .preferences-overlay.hidden {
     display: none;   
@@ -387,8 +383,27 @@ nav a {
     min-width: 300px;
 }
 
+@media (min-width: 600px) {
+    .preferences-overlay__container{
+        min-width: 400px;
+    }   
+}
+
+@media (min-width: 900px) {
+    .preferences-overlay__container{
+        min-width: 600px;
+    }   
+}
+
+@media (min-width: 1200px) {
+    .preferences-overlay__container{
+        min-width: 800px;
+    }   
+}
+
 .preferences-overlay__actions {
     text-align: right;
+    margin-top: 2rem;
 }
 
 .content-wrapper.hidden {
