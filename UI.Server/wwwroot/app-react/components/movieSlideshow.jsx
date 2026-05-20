@@ -44,7 +44,7 @@ class GlideWrapper {
         
         let slideNodes = this.container.querySelectorAll('.glide__slide')
         slideNodes.forEach(slide => {
-            slide.addEventListener('click', self.slideClick);
+            slide.addEventListener('click', this.onSlideClick);
         });
 
         document.addEventListener('touchstart', ev => {
@@ -73,7 +73,7 @@ class GlideWrapper {
         document.removeEventListener('touchstart', self.slideClick);
     }
 
-    onSlideClick() {
+    onSlideClick(e) {
         const slide = e.currentTarget;
         if (slide._slideClickTimeout)
             clearTimeout(slide._slideClickTimeout);
