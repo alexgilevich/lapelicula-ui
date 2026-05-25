@@ -8,7 +8,7 @@
 </h1>
 
 
-<h4 align="center">Movie recommender system on top of Tensorflow, Python and .NET</h4>
+<h4 align="center">Movie recommender on top of Tensorflow, Python and .NET</h4>
 
 <p align="center">
   <a href="https://github.com/alexgilevich/lapelicula-ui/actions/workflows/aws.yml">
@@ -28,7 +28,7 @@
 </p>
 
 <p align="center">
-  This is the web UI repository. ML code is included as a git submodule. For ML code check out <a href="https://github.com/alexgilevich/lapelicula-ml" target="_blank">this repo</a>.
+  This is the web UI repository. For model training and data preprocessing code, check out <a href="https://github.com/alexgilevich/lapelicula-ml" target="_blank">this repo</a>.
 </p>
 
 <p align="center">
@@ -38,44 +38,58 @@
 
 ## Architecture
 
-From the very inception, the architecture of La Pelicula was conceived to be simple in nature because the purpose of this project is to (a) test out various ideas, (b) explore the limits of the technology and (c) demonstrate how you could train a full-fledged ML model and run it locally in a self-contained autonomous way using C# and Python working hand-in-hand together to show their strong sides: C# and .NET being a convenient platform to run efficient web apps, and Python being the most widespread language for building ML models and running experiments with it. 
+The project consists of two repos: ML and UI. 
 
-For example, the decision to take MovieLens 100k dataset for training initially and not anything bigger than that was made with the goal to keep the resource consumption to minimum and because I believe it should be possible to get a high-quality model for this simple use case (yet!) on the basis of a limitted data set like this. 
+ML repo includes code for data preprocessing and model training on top of Apache Spark, MLFlow and TensorFlow. Once trained, the model binaries are saved to S3 as a MLFlow wrapper over TensorFlow Keras model. 
 
-Another example is Pandas. Even though I am a certified Databricks Champion, I believe that for now using Spark would be an overkill. Because let's be honest – 100k rating rows is not much of the data in the first place (even though I oversample those to about 500k during [preprocessing](https://github.com/alexgilevich/lapelicula-ml))! Now, I am not saying that I will never use it in the scope of this project. Anything is possible. And, if the current technology presents an obvious limitation, that's about time to scale it out to be more distributed (and probably convenient), right?
+UI repo includes C# / Python backend and React.js frontend code. The backend loads the model from the configured S3 prefix via MLFlow. The code for model loading and inferencing is written entirely with Python. Python and C# code are executed in the same process without any extra Python APIs in between. .NET passes the movie matrix for inferencing to Python via Python Buffer protocol which ensures minimal in-memory data copying. 
 
-Thus, many architectural decisions that have been made and will be made in the future are steming from this initial conception: test out at a small scale first and only then scale it out, if it shows to be benifical. 
+The movies list is stored in a Amazon DynamoDB table prefilled by the data preprocessing job (see the ML repo).
+
+Even though Apache Spark code operates with data using Unity Catalog and Delta Lake, UI repo does not depend on them and the only requirement for it to function is to load the trained model and list of all movies.
 
 ### Features:
 * Neural Network with two tower architecture (content-based recommender)
 * Trained with the (oversampled) [MovieLens 100k](https://grouplens.org/datasets/movielens/) tiny dataset (check out more info in the [ML repo](https://github.com/alexgilevich/lapelicula-ml))
 * Python code emdedded and run directly in the .NET process with [CSnakes](https://tonybaloney.github.io/CSnakes/)
-* Local training and raw data preprocessing without external dependencies (with Pandas and TensorFlow)
-* No external database dependencies
+* Training and raw data preprocessing with Apache Spark, Unity Catalog, Delta Lake, MLFlow and TensorFlow
 * [TMDB API](https://developer.themoviedb.org/docs/getting-started) integration for getting additional movie attributes
-* Stack: .NET, Python, TensorFlow, mix of Blazor/React.js/WebAssembly on the frontend
+* Stack: .NET, Python, TensorFlow, React.js, MLFlow, Apache Spark, Unity Catalog
 * Content features: only genres for now (see todo)
 * Initial server-side pre-rendering with top 200 movies for SEO optimization purposes
 * Predictions on the whole movie data set (~9700 movies currently)
 
-<img width="591" height="1205" alt="recommender-Page-2 drawio" src="https://github.com/user-attachments/assets/045203e1-0f5f-4fd6-9a7e-c4e7bea44b52" />
+<img width="531" height="455" alt="La Pelicula Architecture Diagram" src="https://github.com/user-attachments/assets/fa0ed504-6629-446a-a8ff-9b337e44027b" />
 
 
 ## How To Build Locally
 
-To run the application locally without Docker, you'll need [.NET SDK](https://dotnet.microsoft.com/en-us/download), [Node.js + npm](https://nodejs.org/en/download/) installed on your computer. Python will be fetched automatically by CSnakes. 
-You will also need a TMDB API key which you can get [here](https://developer.themoviedb.org/docs/getting-started).
+To run the application locally without Docker, you'll need [.NET SDK](https://dotnet.microsoft.com/en-us/download), [Node.js + npm](https://nodejs.org/en/download/) installed on your computer. Python runtime is going to be donwloaded automatically during initialization. 
+
+Prerequisites:
+
+* The DynamoDB table with movies is prefilled with the preprocessing code (either run the preprocessing job in Databricks or run the code locally)
+* The model is trained and saved to the configured S3 location with the training code (either run the code in Databricks or run the code locally)
+
+
 From your command line:
 
 ```bash
 # Clone this repository
-$ git clone --recurse-submodules https://github.com/alexgilevich/lapelicula-ui
+$ git clone https://github.com/alexgilevich/lapelicula-ui
 
 # Go into the repository
 $ cd lapelicula-ui
 
-# Set API key
-$ export TMDB_API_KEY="{put your TMDB API key here}"
+# Set all environment variables or create a .env file
+$ export AWS_ACCESS_KEY_ID={your AWS credentials to load the model from S3 and access DynamoDB movie table}
+$ export AWS_SECRET_ACCESS_KEY={your AWS credentials to load the model from S3 and access DynamoDB movie table}
+$ export AWS_REGION={your AWS credentials to load the model from S3 and access DynamoDB movie table}
+$ export MODEL_SAVE_S3_BUCKET=lapelicula
+$ export MODEL_SAVE_S3_PREFIX=models/
+$ export MLFLOW_MODEL_NAME=lapelicula-movie-recommender-model-new
+$ export ASPNETCORE_ENVIRONMENT=Development
+
 
 # Run the app
 $ dotnet run --project UI.Server/UI.Server.csproj
@@ -85,30 +99,38 @@ Or with Docker:
 
 ```bash
 # Clone this repository
-$ git clone --recurse-submodules https://github.com/alexgilevich/lapelicula-ui
+$ git clone https://github.com/alexgilevich/lapelicula-ui
 
 # Set 
 $ cd lapelicula-ui
 
 # Build the image
-$ docker build -f UI.Server/Dockerfile -t lapelicula-ui ./
+$  docker build -t lapelicula-ui . 
 
-# Set API key
-$ echo "TMDB_API_KEY='{put your TMDB API key here}'" > UI.Server/.env
+# create a .env file with the following variables:
+# Set all environment variables or create a .env file
+# AWS_ACCESS_KEY_ID={your AWS credentials to load the model from S3 and access DynamoDB movie table}
+# AWS_SECRET_ACCESS_KEY={your AWS credentials to load the model from S3 and access DynamoDB movie table}
+# AWS_REGION={your AWS credentials to load the model from S3 and access DynamoDB movie table}
+# MODEL_SAVE_S3_BUCKET=lapelicula
+# MODEL_SAVE_S3_PREFIX=models/
+# MLFLOW_MODEL_NAME=lapelicula-movie-recommender-model-new
+# ASPNETCORE_ENVIRONMENT=Docker
+
 
 # Run the image
-$ docker run --rm -it --mount='type=volume,src=lapelicula-ml-data,dst=/app/ml/data,volume-driver=local' --mount='type=volume,src=lapelicula-ml-artifacts,dst=/app/ml/artifacts,volume-driver=local' -p 8080:8080 -p 8081:8081 --env-file ./UI.Server/.env lapelicula-ui
+$ docker run --name lapelicula-ui --env-file .env --rm -p 8080:8080 -p 8081:8081 lapelicula-ui      
+
 ```
 
-Once the initial training is done, you'll be able to run the code with the trained model saved locally.
 
 
 ## TODO
 
-- Increase the number of movies and add candidate selection phase via ANN or other vector search algorithms
-- Add a separate page with all recommended movies
-- Migrate from Blazor to React.js on the frontend side (as Blazor is not used much anyway for now)
-- everything else in [the ML todo list](https://github.com/alexgilevich/lapelicula-ml)
+- [ ] Increase the number of movies and add candidate selection phase via ANN or other vector search algorithms
+- [ ] Add a separate page with all recommended movies
+- [x] Migrate from Blazor to React.js on the frontend side (as Blazor is not used much anyway for now)
+- [ ] Add user profiles
 
 
 Feel free to help me with the list above by contributing to this repo :)
@@ -135,7 +157,8 @@ If you like this project and think it has helped in any way, consider buying me 
 
 ## License
 
-MIT
+* UI and the code in the UI repo is licensed under [GNU General Public License v3.0](LICENSE)
+* ML repo is licensed under [MIT](https://github.com/alexgilevich/lapelicula-ml/LICENSE)
 
 ---
 

@@ -108,5 +108,9 @@ public class UserPreferences
         return _propertyToKeyMapping.Values.Order().ToArray();
     }
     
+    public override string ToString()
+    {
+        return string.Join(";", ToDictionary().Select(kv => $"{kv.Key}:{kv.Value}"));
+    }
     
 }

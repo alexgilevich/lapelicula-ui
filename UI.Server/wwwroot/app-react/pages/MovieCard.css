@@ -1,0 +1,187 @@
+.movie-card {
+    display: flex;
+    gap: 2.5rem;
+    max-width: 1100px;
+    width: 100%;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
+}
+
+/* Poster — default mobile order (after content), overridden on desktop */
+.movie-card__poster {
+    flex-shrink: 0;
+}
+
+@media (min-width: 701px) {
+    .movie-card__poster {
+        order: -1;
+    }
+}
+
+/* Poster image */
+.movie-card__poster img {
+    width: 300px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    object-fit: cover;
+}
+
+/* Content */
+.movie-card__content {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Title */
+.movie-card__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+    line-height: 1.2;
+}
+
+@media (max-width: 700px) {
+    .movie-card__title {
+        font-size: 1.8rem;
+    }
+}
+
+.movie-card__year {
+    font-weight: 400;
+    color: #666;
+}
+
+/* TMDB link */
+.movie-card__tmdb-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: #e5a00d;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.movie-card__tmdb-link:hover {
+    text-decoration: underline;
+}
+
+/* Meta section (genres + ratings) */
+.movie-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+/* Genre tags */
+.movie-card__genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.movie-card__genre-tag {
+    background-color: #f0f0f0;
+    border-radius: 16px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+/* Ratings */
+.movie-card__ratings {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.95rem;
+}
+
+.movie-card__tagline {
+    color: #666;
+    font-style: italic;
+}
+
+.movie-card__rating {
+    color: #d4a017;
+    font-weight: 600;
+}
+
+.movie-card__age-rating {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--text-lights);
+    border-radius: 4px;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Description */
+.movie-card__description {
+    line-height: 1.6;
+    color: var(--text-light);
+    margin: 0;
+}
+
+/* Adult tag */
+.movie-card__adult-tag {
+    background-color: #fff9c4;
+    border-radius: 16px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+/* Financials */
+.movie-card__financials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Loading / not found */
+.movie-card.loading,
+.movie-card.not-found {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+    .movie-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: left;
+        gap: 2rem;
+    }
+
+    .movie-card__content {
+        width: 100%;
+    }
+
+    .movie-card__poster img {
+        width: 240px;
+    }
+
+    .movie-card__meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .movie-card__financials {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}

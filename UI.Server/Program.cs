@@ -1,9 +1,10 @@
+using Amazon.DynamoDBv2;
 using LaPelicula.UI.Server.Components;
 using CSnakes.Runtime;
 using CSnakes.Runtime.Locators;
-using LaPelicula.UI.Client.Services;
+using LaPelicula.UI.Server.Common;
 using LaPelicula.UI.Server.Services;
-using LaPelicula.UI.Shared;
+using LaPelicula.UI.Server.Services.HostedServices;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Internal;
 using UI.Shared;
@@ -12,17 +13,30 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveServerComponents();
 
 // Add Python services to the container.
-var home = Path.Join(Environment.CurrentDirectory, "ml");
-builder.Services
+var home = Path.Join(Environment.CurrentDirectory, "Python");
+var pythonBuilder =builder.Services
     .WithPython()
     .WithHome(home)
-    .FromRedistributable(RedistributablePythonVersion.Python3_11)
-    .WithVirtualEnvironment(Path.Join(home, ".venv"))
-    .WithPipInstaller(Path.Join(home, "requirements.txt"));
+    .WithVirtualEnvironment(Path.Join(home, ".venv-net"));
+
+if (builder.Environment.IsDevelopment())
+{
+    pythonBuilder
+        .FromRedistributable(RedistributablePythonVersion.Python3_13)
+        .WithPipInstaller(Path.Join(home, "requirements.txt"));
+}
+else
+{
+    var dottedVersion = "3.13.2";
+    var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.DoNotVerify);
+    var installedPath = Path.Join(appDataPath, "CSnakes", $"python{dottedVersion}", "python", "install");
+    pythonBuilder
+        .FromFolder(installedPath, dottedVersion);
+}
+
 
 // Add services to the container.
 builder.Services
@@ -30,11 +44,16 @@ builder.Services
     .AddMemoryCache()
     .AddSingleton<IUserPreferencesEncoder, UserPreferencesEncoder>()
     .AddSingleton<ITensorFlowModelService, TensorFlowModelService>()
-    .AddSingleton<IMovieRepository, InMemoryMovieRepository>()
+    .AddSingleton<IMovieService, MovieService>()
+    .AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>()
     .AddSingleton<IRecommendationService, RecommendationService>()
-    .AddSingleton<IRecommendationsHttpService, PrerenderedRecommendationsHttpService>()
     .AddHttpContextAccessor()
-    .AddControllers();
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
+    
 
 
 // Model training hosted service – immediately starts training when the application starts
@@ -54,14 +73,17 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
+builder.Services.Configure<RecommendationsConfig>(builder.Configuration.GetSection("Recommendations"));
+builder.Services.Configure<RepositoryCacheConfig>(builder.Configuration.GetSection("RepositoryCache"));
+
+builder.Services
+    .AddSingleton<INonCached<IMovieRepository>, DynamoDbMovieRepository>()
+    .AddSingleton<IMovieRepository, CachedDynamoDbMovieRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseWebAssemblyDebugging();
-}
-else
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // Enable X-Forwarded headers in production
@@ -70,13 +92,13 @@ else
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+
 // Pipeline
 app.UseHttpsRedirection();
 app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapControllers();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(LaPelicula.UI.Client._Imports).Assembly);
+    .AddInteractiveServerRenderMode();
 app.Run();
