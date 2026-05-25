@@ -59,7 +59,7 @@ Even though Apache Spark code operates with data using Unity Catalog and Delta L
 * Initial server-side pre-rendering with top 200 movies for SEO optimization purposes
 * Predictions on the whole movie data set (~9700 movies currently)
 
-<img width="591" height="1205" alt="recommender-Page-2 drawio" src="https://github.com/user-attachments/assets/045203e1-0f5f-4fd6-9a7e-c4e7bea44b52" />
+<img width="531" height="455" alt="La Pelicula Architecture Diagram" src="https://github.com/user-attachments/assets/fa0ed504-6629-446a-a8ff-9b337e44027b" />
 
 
 ## How To Build Locally
@@ -127,10 +127,10 @@ $ docker run --name lapelicula-ui --env-file .env --rm -p 8080:8080 -p 8081:8081
 
 ## TODO
 
-[] Increase the number of movies and add candidate selection phase via ANN or other vector search algorithms
-[] Add a separate page with all recommended movies
-[x] Migrate from Blazor to React.js on the frontend side (as Blazor is not used much anyway for now)
-[] Add user profiles
+- [ ] Increase the number of movies and add candidate selection phase via ANN or other vector search algorithms
+- [ ] Add a separate page with all recommended movies
+- [x] Migrate from Blazor to React.js on the frontend side (as Blazor is not used much anyway for now)
+- [ ] Add user profiles
 
 
 Feel free to help me with the list above by contributing to this repo :)
